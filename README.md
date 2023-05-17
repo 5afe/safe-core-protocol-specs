@@ -15,20 +15,20 @@ The objective of the protocol is to **enforce** the **correct conduct and proced
 
 ## Architecture
 
-![image](https://github.com/rmeissner/safe-protocol-specs/assets/2896048/b32e509f-49e0-44cc-ae65-b06ee0ce75c1)
+![architecture_overview](./assets/architecture_overview.png)
 
-## Mediator
+### Mediator
 
 [read more](mediator/README.md)
 
-## Accounts
+### Accounts
 
 [read more](accounts/README.md)
 
-## Components
+### Components
 
 [read more](components/README.md)
 
-## Registry
+### Registry
 
 [read more](registry/README.md)
