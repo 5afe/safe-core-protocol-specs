@@ -11,24 +11,24 @@
 
 The objective of the protocol is to **enforce** the **correct conduct and procedures** of a system of rules of the **Safe ecosystem**
 
-[read more](objective/README.md)
+[read more](/objective/README.md)
 
 ## Architecture
 
-![architecture_overview](./assets/architecture_overview.png)
+!<img src="./_assets/architecture_overview.png" width=600 alt="Architecture Overview" />
 
 ### Mediator
 
-[read more](mediator/README.md)
+[read more](/mediator/README.md)
 
 ### Accounts
 
-[read more](accounts/README.md)
+[read more](/accounts/README.md)
 
 ### Components
 
-[read more](components/README.md)
+[read more](/components/README.md)
 
 ### Registry
 
-[read more](registry/README.md)
+[read more](/registry/README.md)
