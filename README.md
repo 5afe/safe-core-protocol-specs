@@ -42,3 +42,9 @@ Smart contract based accounts bring a lot of flexibility. To maximize on this fl
 For the Safe ecosystem to grow in a healthy way it is important to define the expected (or **correct**) **conduct and procedures**. This is done in the registry. Only `Components` that follow these will be handled by the `Mediator`. 
 
 [read more](/registry/README.md)
+
+### Meta Information
+
+To put all the parts and their interactions into context it is important to provide (meta) information. These information will allow developers to add additional information to interactions so that the users can understand what is happening and what they are interacting with.
+
+[read more](/meta_information/README.md)
