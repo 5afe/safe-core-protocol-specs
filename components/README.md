@@ -65,8 +65,14 @@ interface ISafeProtocolModule {
 
 ## Signature verifiers (ERC-1271)
 
+References:
+- https://github.com/zerodevapp/kernel/blob/main/src/validator/IValidator.sol
+
+
+- EIP-712 based Signature Verifier
+
 ```solidity
-interface ISafeProtocolSignatureVerifier {
+interface ISafeProtocol712SignatureVerifier {
     /**
      * @dev If called by `SignatureVerifierMuxer`, the following has already been checked:
      *      _hash = h(abi.encodePacked("\x19\x01", domainSeparator, h(typeHash || encodeData)));
