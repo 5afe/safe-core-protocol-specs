@@ -51,3 +51,7 @@ TODO: How to handle return data for `executeTransaction` (as it is an array of a
 ## Flow Charts
 
 ## Automatic Enforcements
+
+## Upgradebility 
+
+It is bound to happen that more feature (i.e. new components) will be added to the Safe Protocol. As the Mediator is the central part of this setup, it is important to consider a path for integrating these new features. Using an upgradeable proxy brings introduces a big security issue and therefore is unfeasible. Seoarating too much of the functionality into separate contract to allow reuseability (i.e. the list of enabled components) will increase the gas costs and is therefore also not practible. A common bettern is to allow a new version to load information from the previous version and thereby allow an information migration.
