@@ -48,6 +48,12 @@ TODO: How to handle return data for `executeTransaction` (as it is an array of a
 - return an array of data byes
 - return no bytes on success
 
+## Uniqueness
+
+As mentioned before it is required that both `SafeTransaction` and `SafeRootAccess` can be uniquely identified. An example where this is important is tooling related to indexing and querying information for the components. For this purpose a `nonce` field is present in the structs, which allows to make the hash calculated for these is unique.
+
+Note: It is the responsibility of the component (i.e. module) to ensure that each of structs can be uniquely identified.
+
 ## Flow Charts
 
 ## Automatic Enforcements
