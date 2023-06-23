@@ -30,7 +30,7 @@ Guards can check any interaction done with an `Account` via the `Mediator`, and 
 interface ISafeProtocolGuard {
     function preCheck(Safe safe, SafeTransaction tx, uint256 executionType, bytes calldata executionMeta) external returns (bytes memory preCheckData);
 
-    function preCheckRootAccess(Safe safe, SafeRootAccess rootAccess, uint256 executionType, bytes calldata executionMeta) external returns (bytes memory preCheckData) external returns (bytes memory preCheckData);
+    function preCheckRootAccess(Safe safe, SafeRootAccess rootAccess, uint256 executionType, bytes calldata executionMeta) external returns (bytes memory preCheckData);
 
     function postCheck(Safe safe, bool success, bytes calldata preCheckData) external;
 }
