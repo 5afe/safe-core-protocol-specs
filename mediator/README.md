@@ -38,16 +38,16 @@ TODO: should the Safe be part of these structs. How to better specify the hashin
 
 ```solidity
 interface ISafeProtocolMediator {
-    function executeTransaction(Safe safe, SafeTransaction tx) external view returns (bool success, bytes[] memory data);
-    function executeRootAccess(Safe safe, SafeRootAccess rootAccess) external view returns (bool success, bytes memory data);
+    function executeTransaction(Safe safe, SafeTransaction tx) external view returns (bytes[] memory data);
+    function executeRootAccess(Safe safe, SafeRootAccess rootAccess) external view returns (bytes memory data);
 }
 ```
 
 To handle return data for `executeTransaction` (as it is an array of actions)
 - Size of `data` must be equal to size of actions array.
-- Each element in `data` corresponds to the action that has been execution i.e. `data[i]` is the result of `action[i]`
-- On failed execution of any one of the action, all elements of `data` must be empty
-- TODO: Should transaction revert on failed execution of any one of the actions?
+- Each element in `data` corresponds to the action that has been execution i.e. `data[i]` is the result of `action[i]`.
+- On failed execution of any one of the action, all elements of `data` must be empty.
+- If execution of action(s) fail, the transaction must revert.
 
 ## Flow Charts
 
