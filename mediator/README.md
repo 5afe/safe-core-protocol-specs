@@ -46,7 +46,6 @@ interface ISafeProtocolMediator {
 To handle return data for `executeTransaction` (as it is an array of actions)
 - Size of `data` must be equal to size of actions array.
 - Each element in `data` corresponds to the action that has been execution i.e. `data[i]` is the result of `action[i]`.
-- On failed execution of any one of the action, all elements of `data` must be empty.
 - If execution of action(s) fail, the transaction must revert.
 
 ## Flow Charts
