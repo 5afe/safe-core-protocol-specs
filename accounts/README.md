@@ -7,3 +7,16 @@ The Safe protocol aims to be **account agnostic** in the long run. At the very b
 [Source Code](https://github.com/safe-global/safe-contracts/tree/v1.4.0)
 
 <img src="../_assets/accounts_safe_140.png" width=400/>
+
+### Interface
+
+```Solidity
+interface ISafe {
+    function execTransactionFromModuleReturnData(
+        address to,
+        uint256 value,
+        bytes memory data,
+        uint8 operation
+    ) external returns (bool success, bytes memory returnData);
+}
+```
