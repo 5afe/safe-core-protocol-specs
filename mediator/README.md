@@ -48,6 +48,12 @@ To handle return data for `executeTransaction` (as it is an array of actions)
 - Each element in `data` corresponds to the action that has been executed i.e. `data[i]` is the result of `action[i]`.
 - If execution of action(s) fail, the transaction must revert.
 
+## Uniqueness
+
+As mentioned before it is required that both `SafeTransaction` and `SafeRootAccess` can be uniquely identified. An example where this is important is tooling related to indexing and querying information for the components. For this purpose a `nonce` field is present in the structs, which allows to make the hash calculated for these is unique.
+
+Note: It is the responsibility of the component (i.e. module) to ensure that each of structs can be uniquely identified.
+
 ## Flow Charts
 
 ## Automatic Enforcements
