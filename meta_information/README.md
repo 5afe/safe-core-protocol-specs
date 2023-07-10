@@ -28,20 +28,20 @@ interface MetaDataProvider {
 
 The meta data format should be flexible to enable different use cases. There are different criteria that should be considered:
 - Semi-human-readable (i.e. strings in a structured data set)
-- Off-chain machine readable (i.e. data parseable by scripts)
+- Off-chain machine readable (i.e. data parsable by scripts)
 - On-chain machine verifiable (i.e. contracts should be able to regenerate the hash)
 
 Considering these criteria a good initial standard to follow is [EIP-712](https://eips.ethereum.org/EIPS/eip-712).
 
 ### EIP-712 Meta Data
 
-[EIP-712](https://eips.ethereum.org/EIPS/eip-712) was designed for signing data and verifying it on-chain. While this is not the use case that is being covered here, it is possible to use this standard to create an easy way to verify these information on chain. Furthermore a lot of tooling around this standard already exists and further initiatives are pushed forward (i.e. to improve readibility for humans of the typed data).
+[EIP-712](https://eips.ethereum.org/EIPS/eip-712) was designed for signing data and verifying it on-chain. While this is not the use case that is being covered here, it is possible to use this standard to create an easy way to verify these information on chain. Furthermore a lot of tooling around this standard already exists and further initiatives are pushed forward (i.e. to improve readability for humans of the typed data).
 
 - Domain is used to provide more context on what meta data is represented here
 
 TODO: we abuse the signing domain for context information, is there a better way?
 
-Note: `name` and `version` of the domain are used to identify the meta data type as the type hash is not easy to use with a simple query interface (i.e. `MetaDataProvider`) due to nested hashing. An alternative would be that the domain object contains details about the part/ context the meta information is related to (i.e. a module) and add type and version to the meta data object. 
+Note: `name` and `version` of the domain are used to identify the meta data type as the type hash is not easy to use with a simple query interface (i.e. `MetaDataProvider`) due to nested hashing. An alternative would be that the domain object contains details about the part/context the meta information is related to (i.e. a module) and add type and version to the meta data object. 
 
 ```solidity
 struct EIP712Domain {

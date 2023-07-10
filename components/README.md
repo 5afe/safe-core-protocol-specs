@@ -2,7 +2,7 @@
 
 [General Types](../mediator/README.md#general-types)
 
-## Fallback method/ Function handler
+## Fallback method / Function handler
 
 Non-static version (invoked via `call`)
 
@@ -22,7 +22,7 @@ interface ISafeProtocolStaticFallbackMethod {
 
 Kudos to @mfw78
 
-## Guards/ Hooks
+## Guards / Hooks
 
 Guards can check any interaction done with an `Account` via the `Mediator`, and also check direct (some) direct interactions on the `Account`(i.e. via the `execTransaction` flow).
 

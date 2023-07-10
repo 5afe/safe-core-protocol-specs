@@ -6,7 +6,7 @@ The objective of the protocol is to **enforce** the **correct conduct and proced
 - What is the `correct conduct and procedures`
     - **Compatibility**
         - Following specific contract interfaces
-        - Best practises for development
+        - Best practices for development
             - Tests
 - What is `enforcement`?
     - **Incentives** and **Penalties**
