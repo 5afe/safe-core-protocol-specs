@@ -1,4 +1,6 @@
-# Mediator
+# Protocol Manager
+
+As the core part of the protocol the `Protocol Manager` is responsible to **enforce** the correct conduct and procedures in the protocol. For this it sits between the `Accounts`and `Components` and acts as a intermediate layer that coordinates all the communication and interaction between these.
 
 ## General Types
 
@@ -37,7 +39,7 @@ Both `SafeTransaction` and `SafeRootAccess` MUST have a unique id, which is the 
 ## Interface
 
 ```solidity
-interface ISafeProtocolMediator {
+interface ISafeProtocolManager {
     function executeTransaction(Safe safe, SafeTransaction tx) external view returns (bytes[] memory data);
     function executeRootAccess(Safe safe, SafeRootAccess rootAccess) external view returns (bytes memory data);
 }
@@ -55,6 +57,45 @@ As mentioned before it is required that both `SafeTransaction` and `SafeRootAcce
 Note: It is the responsibility of the component (i.e. module) to ensure that each of structs can be uniquely identified.
 
 ## Flow Charts
+
+### Root Access Flow
+
+```mermaid
+sequenceDiagram
+    participant P as Plug In
+    participant M as Protocol Manager
+    participant R as Registry
+    participant H as Hooks
+    participant A as Safe Account
+    P->>M: `executeRootAccess`
+    activate M
+    alt
+        M->>R: `check(address component)`
+        activate R
+        R-->>M: `uint256 listedAt, uint256 flaggedAt`
+        deactivate R
+        opt if Hook is set
+            M->>H: `preCheckRootAccess(Safe safe, SafeTransaction tx, uint256 executionType, bytes executionMeta)`
+            activate H
+            H-->>M: `bytes preCheckData`
+        end
+        M->>A: `execTransactionFromModuleReturnData`
+        activate A
+        A-->>M: `bool success, bytes memory returnData`
+        deactivate A
+        opt if not success
+            M--XM: `revert`
+        end
+            opt if Hook is set
+                M->>H: `postCheck(Safe safe, SafeTransaction tx, uint256 executionType, bytes preCheckDa)`
+            end
+            M-->>P: `bytes data`
+        deactivate H
+        deactivate M
+    else on any revert
+        M--XP: `revert`
+    end
+```
 
 ## Automatic Enforcements
 

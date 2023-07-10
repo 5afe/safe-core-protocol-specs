@@ -19,11 +19,11 @@ The objective of the protocol is to **enforce** the **correct conduct and proced
 
 The Safe Protocol is made up of different parts. At the core of the protocol is the `Mediator` which connects the `Accounts` with the different `Components` using the `Registry` for governance of the protocol. Each of these parts has their specific responsibilities and the architecture is designed to clearly separate these pieces by defining concrete interfaces. This will allow that each of the parts can be independently be extended and iterated on, enabling the protocol to grow and evolve.
 
-### Mediator
+### Protocol Manager
 
-As the core part of the protocol the `Mediator` is responsible to **enforce** the correct conduct and procedures in the protocol. For this the Mediator sits between the `Accounts`and `Components` and acts as a intermediate layer that mediates all the communication and interaction between these.
+As the core part of the protocol the `Protocol Manager` is responsible to **enforce** the correct conduct and procedures in the protocol. For this it sits between the `Accounts`and `Components` and acts as a intermediate layer that coordinates all the communication and interaction between these.
 
-[read more](/mediator/README.md)
+[read more](/manager/README.md)
 
 ### Accounts
 
