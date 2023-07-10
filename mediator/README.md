@@ -14,6 +14,7 @@ Safe transaction (invoked via `call`)
 
 ```solidity
 struct SafeTransaction {
+    address safe,
     SafeProtocolAction[] actions,
     uint256 nonce,
     bytes32 metaHash
@@ -24,6 +25,7 @@ Safe root access (invoked via `delegatecall`)
 
 ```solidity
 struct SafeRootAccess {
+    address safe,
     SafeProtocolAction action,
     uint256 nonce,
     bytes32 metaHash
@@ -31,8 +33,6 @@ struct SafeRootAccess {
 ```
 
 Both `SafeTransaction` and `SafeRootAccess` MUST have a unique id, which is the EIP-712 hash of the object.
-
-TODO: should the Safe be part of these structs. How to better specify the hashing here.
 
 ## Interface
 
@@ -58,6 +58,6 @@ Note: It is the responsibility of the component (i.e. module) to ensure that eac
 
 ## Automatic Enforcements
 
-## Upgradebility 
+## Upgradeability  
 
-It is bound to happen that more feature (i.e. new components) will be added to the Safe Protocol. As the Mediator is the central part of this setup, it is important to consider a path for integrating these new features. Using an upgradeable proxy brings introduces a big security issue and therefore is unfeasible. Seoarating too much of the functionality into separate contract to allow reuseability (i.e. the list of enabled components) will increase the gas costs and is therefore also not practible. A common pattern is to allow a new version to load information from the previous version and thereby allow an information migration.
+It is inevitable that more features will be added to the Safe Protocol (e.g. new components). As the Mediator is the central part of this setup, it is important to consider a path for integrating these new features. Using an upgradeable proxy for the mediator would introduce unacceptable security concerns. Separating too much of the functionality into separate contract to allow reusability (i.e. the list of enabled components) would increase the gas costs, and so is also not practical. A common and acceptable pattern is to allow a new version to load information from the previous version and thereby allow an information migration.
