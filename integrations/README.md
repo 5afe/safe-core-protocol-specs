@@ -1,13 +1,13 @@
-# Components
+# Integrations
 
-[General Types](../mediator/README.md#general-types)
+[General Types](../manager/README.md#general-types)
 
-## Fallback method / Function handler
+## Function handler
 
 Non-static version (invoked via `call`)
 
 ```solidity
-interface ISafeProtocolFallbackMethod {
+interface ISafeProtocolFunctionHandler {
     function handle(Safe safe, address sender, uint256 value, bytes calldata data) external returns (bytes memory result);
 }
 ```
@@ -15,19 +15,19 @@ interface ISafeProtocolFallbackMethod {
 static version (invoked via `staticcall`)
 
 ```solidity
-interface ISafeProtocolStaticFallbackMethod {
+interface ISafeProtocolStaticFunctionHandler {
     function handle(Safe safe, address sender, uint256 value, bytes calldata data) external view returns (bytes memory result);
 }
 ```
 
 Kudos to @mfw78
 
-## Guards / Hooks
+## Hooks
 
-Guards can check any interaction done with an `Account` via the `Mediator`, and also check direct (some) direct interactions on the `Account`(i.e. via the `execTransaction` flow).
+Hooks can check any interaction done with an `Account` via the `Manager`, and also check direct (some) direct interactions on the `Account`(i.e. via the `execTransaction` flow).
 
 ```solidity
-interface ISafeProtocolGuard {
+interface ISafeProtocolHooks {
     function preCheck(Safe safe, SafeTransaction tx, uint256 executionType, bytes calldata executionMeta) external returns (bytes memory preCheckData);
 
     function preCheckRootAccess(Safe safe, SafeRootAccess rootAccess, uint256 executionType, bytes calldata executionMeta) external returns (bytes memory preCheckData);
@@ -38,16 +38,16 @@ interface ISafeProtocolGuard {
 
 Execution types:
 - Multisignature Flow
-- Module Flow
+- Plug-In Flow
 
 TODO: provide more details on execution type and execution meta
 
-## Modules/ Plug-Ins
+## Plug-Ins
 
-Modules can trigger transactions on an `Account` via the `Mediator`.
+Plug-Ins can trigger transactions on an `Account` via the `Manager`.
 
 ```solidity
-interface ISafeProtocolModule {
+interface ISafeProtocolPlugIn {
     function name() external view returns (string memory name);
 
     function version() external view returns (string memory version);
@@ -58,10 +58,10 @@ interface ISafeProtocolModule {
 }
 ```
 
-### Module Interface Extensions
+### Plug-In Interface Extensions
 
-- Module Fee Payment Facilitator (something like In-App Payments)
-- Gas Fee Payment Authorizer (allow 4337 and other relay usages with modules)
+- Plug-In Fee Payment Facilitator (something like In-App Payments)
+- Gas Fee Payment Authorizer (allow 4337 and other relay usages with plug-ins)
 
 ## Signature verifiers (ERC-1271)
 
