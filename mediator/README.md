@@ -14,6 +14,7 @@ Safe transaction (invoked via `call`)
 
 ```solidity
 struct SafeTransaction {
+    address safe,
     SafeProtocolAction[] actions,
     uint256 nonce,
     bytes32 metaHash
@@ -24,6 +25,7 @@ Safe root access (invoked via `delegatecall`)
 
 ```solidity
 struct SafeRootAccess {
+    address safe,
     SafeProtocolAction action,
     uint256 nonce,
     bytes32 metaHash
@@ -31,8 +33,6 @@ struct SafeRootAccess {
 ```
 
 Both `SafeTransaction` and `SafeRootAccess` MUST have a unique id, which is the EIP-712 hash of the object.
-
-TODO: should the Safe be part of these structs. How to better specify the hashing here.
 
 ## Interface
 
