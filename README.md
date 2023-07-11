@@ -2,8 +2,8 @@
 
 ## Motivation
 
-- Enable easy integration of different components
 - Provide security/ safety to the user
+- Enable composability of different integrations
 - Provide a common interface to build tooling on top (i.e. indexers)
 - Provide a system for all smart contract accounts to make use of
 
@@ -17,11 +17,11 @@ The objective of the protocol is to **enforce** the **correct conduct and proced
 
 <img src="./_assets/architecture_overview.png" width=600 alt="Architecture Overview" />
 
-The Safe Protocol is made up of different parts. At the core of the protocol is the `Mediator` which connects the `Accounts` with the different `Components` using the `Registry` for governance of the protocol. Each of these parts has their specific responsibilities and the architecture is designed to clearly separate these pieces by defining concrete interfaces. This will allow that each of the parts can be independently be extended and iterated on, enabling the protocol to grow and evolve.
+The Safe Protocol is made up of different parts. At the core of the protocol is the `Manager` which connects the `Accounts` with the different `Integrations` using the `Registry` for governance of the protocol. Each of these parts has their specific responsibilities and the architecture is designed to clearly separate these pieces by defining concrete interfaces. This will allow that each of the parts can be independently be extended and iterated on, enabling the protocol to grow and evolve.
 
 ### Protocol Manager
 
-As the core part of the protocol the `Protocol Manager` is responsible to **enforce** the correct conduct and procedures in the protocol. For this it sits between the `Accounts`and `Components` and acts as a intermediate layer that coordinates all the communication and interaction between these.
+As the core part of the protocol the `Protocol Manager` is responsible to **enforce** the correct conduct and procedures in the protocol. For this it sits between the `Accounts`and `Integrations` and acts as a intermediate layer that coordinates all the communication and interaction between these.
 
 [read more](/manager/README.md)
 
@@ -31,15 +31,15 @@ The `Acccounts` represent the users in the ecosystem. Users can come in many for
 
 [read more](/accounts/README.md)
 
-### Components
+### Integrations
 
-Smart contract based accounts bring a lot of flexibility. To maximize on this flexibility the goals of the Safe project is to foster a **Safe ecosystem** of `Components` that cover all different kinds of use cases, ultimately briding web2 and web3.
+Smart contract based accounts bring a lot of flexibility. To maximize on this flexibility the goals of the Safe project is to foster a **Safe ecosystem** of `Integrations` that cover all different kinds of use cases, ultimately briding web2 and web3.
 
-[read more](/components/README.md)
+[read more](/integrations/README.md)
 
 ### Registry
 
-For the Safe ecosystem to grow in a healthy way it is important to define the expected (or **correct**) **conduct and procedures**. This is done in the registry. Only `Components` that follow these will be handled by the `Mediator`. 
+For the Safe ecosystem to grow in a healthy way it is important to define the expected (or **correct**) **conduct and procedures**. This is done in the registry. Only `Integrations` that follow these will be handled by the `Manager`. 
 
 [read more](/registry/README.md)
 

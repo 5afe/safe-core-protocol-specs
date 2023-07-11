@@ -41,21 +41,21 @@ Considering these criteria a good initial standard to follow is [EIP-712](https:
 
 TODO: we abuse the signing domain for context information, is there a better way?
 
-Note: `name` and `version` of the domain are used to identify the meta data type as the type hash is not easy to use with a simple query interface (i.e. `MetaDataProvider`) due to nested hashing. An alternative would be that the domain object contains details about the part/context the meta information is related to (i.e. a module) and add type and version to the meta data object. 
+Note: `name` and `version` of the domain are used to identify the meta data type as the type hash is not easy to use with a simple query interface (i.e. `MetaDataProvider`) due to nested hashing. An alternative would be that the domain object contains details about the part/context the meta information is related to (i.e. a plug-in) and add type and version to the meta data object. 
 
 ```solidity
 struct EIP712Domain {
     string name, // MUST be type name of the meta data (i.e. TransactionMetaData)
     string version, // MUST be version of the meta data (i.e. 1.0)
-    uint256 chainId, // MUST be the chain where the component related to this meta data resides
-    address verifyingContract, // MUST be component address related to this meta data (i.e. module address)
+    uint256 chainId, // MUST be the chain where the integration related to this meta data resides
+    address verifyingContract, // MUST be integration address related to this meta data (i.e. plug-in address)
 }
 ```
 
 - Types
 
 ```solidity
-struct ComponentMetaData {
+struct IntegrationMetaData {
     string name,
     string description,
     string version

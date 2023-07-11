@@ -1,6 +1,6 @@
 # Protocol Manager
 
-As the core part of the protocol the `Protocol Manager` is responsible to **enforce** the correct conduct and procedures in the protocol. For this it sits between the `Accounts`and `Components` and acts as a intermediate layer that coordinates all the communication and interaction between these.
+As the core part of the protocol the `Protocol Manager` is responsible to **enforce** the correct conduct and procedures in the protocol. For this it sits between the `Accounts`and `Integrations` and acts as a intermediate layer that coordinates all the communication and interaction between these.
 
 ## General Types
 
@@ -52,9 +52,9 @@ To handle return data for `executeTransaction` (as it is an array of actions)
 
 ## Uniqueness
 
-As mentioned before it is required that both `SafeTransaction` and `SafeRootAccess` can be uniquely identified. An example where this is important is tooling related to indexing and querying information for the components. For this purpose a `nonce` field is present in the structs, which allows to make the hash calculated for these is unique.
+As mentioned before it is required that both `SafeTransaction` and `SafeRootAccess` can be uniquely identified. An example where this is important is tooling related to indexing and querying information for the integrations. For this purpose a `nonce` field is present in the structs, which allows to make the hash calculated for these is unique.
 
-Note: It is the responsibility of the component (i.e. module) to ensure that each of structs can be uniquely identified.
+Note: It is the responsibility of the integration (i.e. plug-in) to ensure that each of structs can be uniquely identified.
 
 ## Flow Charts
 
@@ -70,7 +70,7 @@ sequenceDiagram
     P->>M: `executeRootAccess`
     activate M
     alt
-        M->>R: `check(address component)`
+        M->>R: `check(address integration)`
         activate R
         R-->>M: `uint256 listedAt, uint256 flaggedAt`
         deactivate R
@@ -101,4 +101,4 @@ sequenceDiagram
 
 ## Upgradeability  
 
-It is inevitable that more features will be added to the Safe Protocol (e.g. new components). As the Mediator is the central part of this setup, it is important to consider a path for integrating these new features. Using an upgradeable proxy for the mediator would introduce unacceptable security concerns. Separating too much of the functionality into separate contract to allow reusability (i.e. the list of enabled components) would increase the gas costs, and so is also not practical. A common and acceptable pattern is to allow a new version to load information from the previous version and thereby allow an information migration.
+It is inevitable that more features will be added to the Safe Protocol (e.g. new integration). As the Manager is the central part of this setup, it is important to consider a path for integrating these new features. Using an upgradeable proxy for the Manager would introduce unacceptable security concerns. Separating too much of the functionality into separate contract to allow reusability (i.e. the list of enabled integration) would increase the gas costs, and so is also not practical. A common and acceptable pattern is to allow a new version to load information from the previous version and thereby allow an information migration.

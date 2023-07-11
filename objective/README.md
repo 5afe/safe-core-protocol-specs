@@ -18,7 +18,7 @@ The objective of the protocol is to **enforce** the **correct conduct and proced
         - App store (listing requirements)
         - Https
 - What is the `Safe Ecosystem`?
-    - Contracts: Modules, Guards, Handlers
+    - Contracts: Plug-Ins, Hooks, Signature Verifiers, Handlers
     - Infrastructure: Indexers, Relayers, …
     - Interfaces: Web Interfaces, Safe Apps, …
 
