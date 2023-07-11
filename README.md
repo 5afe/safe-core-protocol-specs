@@ -2,8 +2,8 @@
 
 ## Motivation
 
-- Enable easy integration of different integration
 - Provide security/ safety to the user
+- Enable composability of different integrations
 - Provide a common interface to build tooling on top (i.e. indexers)
 - Provide a system for all smart contract accounts to make use of
 
