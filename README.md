@@ -1,4 +1,4 @@
-# Safe Protocol Specs
+# Safe{Core} Protocol Specs
 
 ## Motivation
 
@@ -17,7 +17,7 @@ The objective of the protocol is to **enforce** the **correct conduct and proced
 
 <img src="./_assets/architecture_overview.png" width=600 alt="Architecture Overview" />
 
-The Safe Protocol is made up of different parts. At the core of the protocol is the `Manager` which connects the `Accounts` with the different `Integrations` using the `Registry` for governance of the protocol. Each of these parts has their specific responsibilities and the architecture is designed to clearly separate these pieces by defining concrete interfaces. This will allow that each of the parts can be independently be extended and iterated on, enabling the protocol to grow and evolve.
+Safe{Core} Protocol is made up of different parts. At the core of the protocol is the `Manager` which connects the `Accounts` with the different `Integrations` using the `Registry` for governance of the protocol. Each of these parts has their specific responsibilities and the architecture is designed to clearly separate these pieces by defining concrete interfaces. This will allow that each of the parts can be independently be extended and iterated on, enabling the protocol to grow and evolve.
 
 ### Protocol Manager
 
