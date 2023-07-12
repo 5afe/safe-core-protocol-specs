@@ -1,6 +1,6 @@
 # Meta Information
 
-To provide more context and information about different parts and their interactions the Safe protocol provides a way to attach meta information to contracts and interactions. The meta data is represented as `metaDataHash` fields in the different parts of the protocol and the actual content that is represented by these hashes can be stored in different locations (depending on the use case).
+To provide more context and information about different parts and their interactions Safe{Core} Protocol provides a way to attach meta information to contracts and interactions. The meta data is represented as `metaDataHash` fields in the different parts of the protocol and the actual content that is represented by these hashes can be stored in different locations (depending on the use case).
 
 To make sure that this meta data can be properly parsed and handled it is important to define a standard for it.
 
