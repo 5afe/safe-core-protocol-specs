@@ -8,7 +8,7 @@ Safe{Core} Protocol is an open, modular framework to make smart accounts secure,
 
 The goal is to create a comprehensive system, designed to enhance the safety and flexibility of user interactions within the smart account ecosystem. The protocol provides a common framework for building additional tools, encourages the composition of various integrations, and supports all types of smart accounts. The protocol **enforces the correct conduct and procedures** of a system of rules of the **smart account ecosystem**.
 
-[read more](/objective/README.md)
+[Read more on "Objectives" ->](/objective/README.md)
 
 ## Architecture
 
@@ -20,28 +20,28 @@ The architecture of the Safe{Core} Protocol is composed of several integral comp
 
 At the heart of the protocol is the `Manager`, ensuring adherence to the prescribed conduct and procedures set by the `Registry`. The `Manager` serves as an intermediary layer coordinating communication and interactions between `Accounts` and `Integrations`.
 
-[read more](/manager/README.md)
+[Read more on "Manager" ->](/manager/README.md)
 
 ### Accounts
 
 `Accounts` are smart-contract based user accounts (or “smart accounts”). The Safe{Core} Protocol is account-agnostic, meaning that it is not tied to a specific account implementation.
 
-[read more](/accounts/README.md)
+[Read more on "Accounts" ->](/accounts/README.md)
 
 ### Integrations
 
 `Integrations` extend the functionality of `Accounts` in different ways. Initial integrations are plugins, hooks, function handlers and signature verifiers, but additional integrations can be added to the Safe{Core} Protocol at a later point.
 
-[read more](/integrations/README.md)
+[Read more on "Integrations" ->](/integrations/README.md)
 
 ### Registry
 
 The `Registry` plays a critical role in maintaining and enforcing standards and security guarantees. Only the `Integrations` that adhere to these guidelines will be recognized and managed by the `Manager`.
 
-[read more](/registry/README.md)
+[Read more on "Registry" ->](/registry/README.md)
 
 ### Metadata
 
 To provide a coherent context to the various parts and their interactions, the provision of `Metadata` is crucial. This information allows developers to append additional context to interactions, enhancing user understanding and interaction transparency.
 
-[read more](/meta_information/README.md)
+[Read more on "Metadata" ->](/meta_information/README.md)
