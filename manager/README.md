@@ -19,7 +19,7 @@ struct SafeTransaction {
     address safe,
     SafeProtocolAction[] actions,
     uint256 nonce,
-    bytes32 metaHash
+    bytes32 metadataHash
 }
 ```
 
@@ -30,7 +30,7 @@ struct SafeRootAccess {
     address safe,
     SafeProtocolAction action,
     uint256 nonce,
-    bytes32 metaHash
+    bytes32 metadataHash
 }
 ```
 
