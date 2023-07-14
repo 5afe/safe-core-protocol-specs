@@ -4,7 +4,7 @@
 
 Safe{Core} Protocol is an open, modular framework to make smart accounts secure, portable, and composable.
 
-## Objective
+## Objectives
 
 The goal is to create a comprehensive system, designed to enhance the safety and flexibility of user interactions within the smart account ecosystem. The protocol provides a common framework for building additional tools, encourages the composition of various integrations, and supports all types of smart accounts. The protocol **enforces the correct conduct and procedures** of a system of rules of the **smart account ecosystem**.
 
