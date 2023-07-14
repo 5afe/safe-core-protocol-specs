@@ -1,5 +1,7 @@
 # Integrations
 
+Integrations extend the functionality of Accounts in different ways. Initial integrations are `plugins`, `hooks`, `function handlers` and `signature verifiers`, but additional integrations can be added to the Safe{Core} Protocol at a later point.
+
 [General Types](../manager/README.md#general-types)
 
 ## Function handler
@@ -64,6 +66,8 @@ interface ISafeProtocolPlugIn {
 - Gas Fee Payment Authorizer (allow 4337 and other relay usages with plug-ins)
 
 ## Signature verifiers (ERC-1271)
+
+There are continuous efforts to expand the types of signatures supported by the EVM beyond the currently predominant secp256k1 elliptic curve. For example, a signature scheme gaining popularity is based on the secp256r1 elliptic curve (see EIP-7212). Signature Verifiers allow accounts to support new standards and enable use-cases such as Passkeys-enabled smart accounts, BLS/Schnorr or quantum-secure signatures.
 
 References:
 - https://github.com/zerodevapp/kernel/blob/main/src/validator/IValidator.sol
