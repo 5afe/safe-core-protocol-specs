@@ -1,6 +1,6 @@
 # Objective
 
-The objective of the protocol is to **enforce** the **correct conduct and procedures** of a system of rules of the **Safe ecosystem**
+The objective of the protocol is to **enforce** the **correct conduct and procedures** of a system of rules of the **smart account ecosystem**
 
 
 - What is the `correct conduct and procedures`
