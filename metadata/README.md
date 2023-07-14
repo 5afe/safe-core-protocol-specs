@@ -1,16 +1,16 @@
 # Metadata
 
-To provide more context and information about different parts and their interactions Safe{Core} Protocol provides a way to attach meta information to contracts and interactions. The metadata is represented as `metaDataHash` fields in the different parts of the protocol and the actual content that is represented by these hashes can be stored in different locations (depending on the use case).
+To provide more context and information about different parts and their interactions Safe{Core} Protocol provides a way to attach meta information to contracts and interactions. The metadata is represented as `metadataHash` fields in the different parts of the protocol and the actual content that is represented by these hashes can be stored in different locations (depending on the use case).
 
 To make sure that this metadata can be properly parsed and handled it is important to define a standard for it.
 
 ## Metadata Provider
 
-To retrieve the metadata based on a `metaDataHash` a `MetadataProvider` is required. There can be different types of providers. These providers are identified by a `type` and a `locations` (TODO: maybe a different name would be better, i.e. `connection`).
+To retrieve the metadata based on a `metadataHash` a `MetadataProvider` is required. There can be different types of providers. These providers are identified by a `type` and a `locations` (TODO: maybe a different name would be better, i.e. `connection`).
 
 A non-exhaustive list of types are:
 - `ipfs` - the `location` MUST be empty (the hash is the ipfs indentifier)
-- `url` - the `location` MUST be a pattern where the metaDataHash can be substituted
+- `url` - the `location` MUST be a pattern where the `metadataHash` can be substituted
 - `contract` - the `location` MUST be a contract address that implements the `MetadataProvider` contract interface
 
 
