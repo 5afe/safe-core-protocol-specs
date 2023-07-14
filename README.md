@@ -2,14 +2,11 @@
 
 ## Motivation
 
-- Provide security/ safety to the user
-- Enable composability of different integrations
-- Provide a common interface to build tooling on top (i.e. indexers)
-- Provide a system for all smart contract accounts to make use of
+Safe{Core} Protocol is an open, modular framework to make smart accounts secure, portable, and composable.
 
 ## Objective
 
-The objective of the protocol is to **enforce** the **correct conduct and procedures** of a system of rules of the **Safe ecosystem**
+The goal is to create a comprehensive system, designed to enhance the safety and flexibility of user interactions within the smart account ecosystem. The protocol provides a common framework for building additional tools, encourages the composition of various integrations, and supports all types of smart accounts. The protocol **enforces the correct conduct and procedures** of a system of rules of the **smart account ecosystem**.
 
 [read more](/objective/README.md)
 
@@ -17,34 +14,34 @@ The objective of the protocol is to **enforce** the **correct conduct and proced
 
 <img src="./_assets/architecture_overview.png" width=600 alt="Architecture Overview" />
 
-Safe{Core} Protocol is made up of different parts. At the core of the protocol is the `Manager` which connects the `Accounts` with the different `Integrations` using the `Registry` for governance of the protocol. Each of these parts has their specific responsibilities and the architecture is designed to clearly separate these pieces by defining concrete interfaces. This will allow that each of the parts can be independently be extended and iterated on, enabling the protocol to grow and evolve.
+The architecture of the Safe{Core} Protocol is composed of several integral components, each carrying its unique responsibilities. The protocol is designed to distinctly separate these elements by defining explicit interfaces, thus allowing independent expansion and iteration of each part. This modularity ensures the sustainable growth and evolution of the smart account ecosystem.
 
-### Protocol Manager
+### Manager
 
-As the core part of the protocol the `Protocol Manager` is responsible to **enforce** the correct conduct and procedures in the protocol. For this it sits between the `Accounts`and `Integrations` and acts as a intermediate layer that coordinates all the communication and interaction between these.
+At the heart of the protocol is the `Manager`, ensuring adherence to the prescribed conduct and procedures set by the `Registry`. The `Manager` serves as an intermediary layer coordinating communication and interactions between `Accounts` and `Integrations`.
 
 [read more](/manager/README.md)
 
 ### Accounts
 
-The `Acccounts` represent the users in the ecosystem. Users can come in many forms, such as individuals, teams or DAOs, that use these accounts to interact with the web3 ecosystem.
+`Accounts` are smart-contract based user accounts (or “smart accounts”). The Safe{Core} Protocol is account-agnostic, meaning that it is not tied to a specific account implementation.
 
 [read more](/accounts/README.md)
 
 ### Integrations
 
-Smart contract based accounts bring a lot of flexibility. To maximize on this flexibility the goals of the Safe project is to foster a **Safe ecosystem** of `Integrations` that cover all different kinds of use cases, ultimately briding web2 and web3.
+`Integrations` extend the functionality of `Accounts` in different ways. Initial integrations are plugins, hooks, function handlers and signature verifiers, but additional integrations can be added to the Safe{Core} Protocol at a later point.
 
 [read more](/integrations/README.md)
 
 ### Registry
 
-For the Safe ecosystem to grow in a healthy way it is important to define the expected (or **correct**) **conduct and procedures**. This is done in the registry. Only `Integrations` that follow these will be handled by the `Manager`. 
+The `Registry` plays a critical role in maintaining and enforcing standards and security guarantees. Only the `Integrations` that adhere to these guidelines will be recognized and managed by the `Manager`.
 
 [read more](/registry/README.md)
 
-### Meta Information
+### Metadata
 
-To put all the parts and their interactions into context it is important to provide (meta) information. These information will allow developers to add additional information to interactions so that the users can understand what is happening and what they are interacting with.
+To provide a coherent context to the various parts and their interactions, the provision of `Metadata` is crucial. This information allows developers to append additional context to interactions, enhancing user understanding and interaction transparency.
 
 [read more](/meta_information/README.md)
