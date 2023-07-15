@@ -12,7 +12,7 @@ In order to address those, the Safe{Core} Protocol proposes an open framework fo
 The objective of the protocol is to `enforce` a set of `rules` within the `smart account ecosystem`.
 
 
-- What are `rules`?
+- What `rules` does the protocol enforce?
     - Support specific contract interfaces of the Safe{Core} Protocol Specs
     - Comply with requirements defined in the Registry
 - How are these rules `enforced`?
