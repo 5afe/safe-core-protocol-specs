@@ -4,6 +4,52 @@ Integrations extend the functionality of Accounts in different ways. Initial int
 
 [General Types](../manager/README.md#general-types)
 
+## Plugins
+
+Plugins allow to add any arbitrary logic to an account such as recovery mechanisms, session keys, and automations.
+
+Plugins can trigger transactions on an `Account` via the `Manager`.
+
+```solidity
+interface ISafeProtocolPlugIn {
+    function name() external view returns (string memory name);
+
+    function version() external view returns (string memory version);
+
+    function metaProvider() external view returns (uint256 type, bytes memory location);
+
+    function requiresRootAccess() external view returns (bool requiresRootAccess);
+}
+```
+
+### Plugin Interface Extensions
+
+- TBD: Gas Fee Payment Authorizer (allow 4337 and other relaying methods with plugins)
+
+## Hooks
+
+Hooks add additional logic at certain points of the transaction lifecycle. Hooks enable various forms of security protections such as allow- and deny-lists, MEV-protections, risk-assessments, and more. The Safe{Core} Protocol currently recognizes the following types of hooks:
+- `preCheck` / `preCheckRootAccess` verify custom conditions using the state before a transaction is executed
+- `postCheck` verify custom conditions at the end of a transaction and reverts 
+
+Hooks can check any interaction done with an `Account` via the `Manager`, and also check direct (some) direct interactions on the `Account`(i.e. via the `execTransaction` flow).
+
+```solidity
+interface ISafeProtocolHooks {
+    function preCheck(Safe safe, SafeTransaction tx, uint256 executionType, bytes calldata executionMeta) external returns (bytes memory preCheckData);
+
+    function preCheckRootAccess(Safe safe, SafeRootAccess rootAccess, uint256 executionType, bytes calldata executionMeta) external returns (bytes memory preCheckData);
+
+    function postCheck(Safe safe, bool success, bytes calldata preCheckData) external;
+}
+```
+
+Execution types:
+- Multisignature Flow
+- Plugin Flow
+
+TODO: provide more details on execution type and execution meta
+
 ## Function handler
 
 Non-static version (invoked via `call`)
@@ -23,47 +69,6 @@ interface ISafeProtocolStaticFunctionHandler {
 ```
 
 Kudos to @mfw78
-
-## Hooks
-
-Hooks can check any interaction done with an `Account` via the `Manager`, and also check direct (some) direct interactions on the `Account`(i.e. via the `execTransaction` flow).
-
-```solidity
-interface ISafeProtocolHooks {
-    function preCheck(Safe safe, SafeTransaction tx, uint256 executionType, bytes calldata executionMeta) external returns (bytes memory preCheckData);
-
-    function preCheckRootAccess(Safe safe, SafeRootAccess rootAccess, uint256 executionType, bytes calldata executionMeta) external returns (bytes memory preCheckData);
-
-    function postCheck(Safe safe, bool success, bytes calldata preCheckData) external;
-}
-```
-
-Execution types:
-- Multisignature Flow
-- Plug-In Flow
-
-TODO: provide more details on execution type and execution meta
-
-## Plugins
-
-Plugins can trigger transactions on an `Account` via the `Manager`.
-
-```solidity
-interface ISafeProtocolPlugIn {
-    function name() external view returns (string memory name);
-
-    function version() external view returns (string memory version);
-
-    function metaProvider() external view returns (uint256 type, bytes memory location);
-
-    function requiresRootAccess() external view returns (bool requiresRootAccess);
-}
-```
-
-### Plugin Interface Extensions
-
-- Plug-In Fee Payment Facilitator (something like In-App Payments)
-- Gas Fee Payment Authorizer (allow 4337 and other relay usages with plug-ins)
 
 ## Signature verifiers
 
