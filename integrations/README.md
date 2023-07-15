@@ -40,7 +40,7 @@ Execution types:
 - Multisignature Flow
 - Plug-In Flow
 
-TODO: provide more details on execution type and execution meta
+TODO: provide more details on execution type and execution metadata
 
 ## Plug-Ins
 
@@ -52,7 +52,7 @@ interface ISafeProtocolPlugIn {
 
     function version() external view returns (string memory version);
 
-    function metaProvider() external view returns (uint256 type, bytes memory location);
+    function metadataProvider() external view returns (uint256 type, bytes memory location);
 
     function requiresRootAccess() external view returns (bool requiresRootAccess);
 }
