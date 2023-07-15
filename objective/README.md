@@ -9,22 +9,19 @@ In order for Ethereum to succeed there needs to be a (transition)[https://vitali
 In order to address those, the Safe{Core} Protocol proposes an open framework for modular smart accounts that are portable, composable and secure. The protocol is inspired by the learnings from the Safe Smart Account, but is fundamentally account-agnostic. It aims to achieve maximum reuse of components in order to establish strong security guarantees.
 
 
-The objective of the protocol is to **enforce** the **correct conduct and procedures** of a system of rules of the **smart account ecosystem**
+The objective of the protocol is to `enforce` a set of `rules` within the `smart account ecosystem`.
 
 
-- What is the `correct conduct and procedures`
-    - **Compatibility**
-        - Following specific contract interfaces
-        - Best practices for development such as tests
-- What is `enforcement`?
-    - **Incentives** and **Penalties**
-        - Staking for responsibility (enforce on-chain)
-        - Take responsibility (pay for incorrectness)
+- What are `rules`?
+    - Support specific contract interfaces of the Safe{Core} Protocol Specs
+    - Comply with requirements defined in the Registry
+- How are these rules `enforced`?
+    - Inclusion criteria for the Registry
     - Examples
         - App store (listing requirements)
         - Https
 - What is the `smart account ecosystem`?
-    - Contracts: Plug-Ins, Hooks, Signature Verifiers, Handlers
+    - Contracts: Plugins, Hooks, Signature Verifiers, Function Handlers
     - Infrastructure: Indexers, Relayers, …
     - Interfaces: Web Interfaces, dApps, …
 
