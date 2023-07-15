@@ -6,7 +6,7 @@ Safe{Core} Protocol is an open, modular framework to make smart accounts secure,
 
 ## Objectives
 
-The goal is to create a comprehensive system, designed to enhance the safety and flexibility of user interactions within the smart account ecosystem. The protocol provides a common framework for building additional tools, encourages the composition of various integrations, and supports all types of smart accounts. The protocol **enforces the correct conduct and procedures** of a system of rules of the **smart account ecosystem**.
+The goal is to create a comprehensive system, designed to enhance the safety and flexibility of user interactions within the smart account ecosystem. The protocol provides a common framework for building additional tools, encourages the composition of various integrations, and supports all types of smart accounts. In order to achieve interoperability and security, the protocol enforces a set of rules within the smart account ecosystem.
 
 [Read more on "Objectives" ->](/objective/README.md)
 
@@ -18,7 +18,7 @@ The architecture of the Safe{Core} Protocol is composed of several integral comp
 
 ### Manager
 
-At the heart of the protocol is the `Manager`, ensuring adherence to the prescribed conduct and procedures set by the `Registry`. The `Manager` serves as an intermediary layer coordinating communication and interactions between `Accounts` and `Integrations`.
+At the heart of the protocol is the `Manager`, ensuring adherence to the prescribed rules set by the `Registry`. The `Manager` serves as an intermediary layer coordinating communication and interactions between `Accounts` and `Integrations`.
 
 [Read more on "Manager" ->](/manager/README.md)
 
