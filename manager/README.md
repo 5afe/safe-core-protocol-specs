@@ -99,6 +99,8 @@ sequenceDiagram
 
 ## Automatic Enforcements
 
+TBD
+
 ## Upgradeability  
 
 It is inevitable that more features will be added to Safe{Core} Protocol (e.g. new integrations). As the Manager is the central part of this setup, it is important to consider a path for integrating these new features. Using an upgradeable proxy for the Manager would introduce unacceptable security concerns. Separating too much of the functionality into separate contract to allow reusability (i.e. the list of enabled integration) would increase the gas costs, and so is also not practical. A better pattern is to allow new versions of the Manager to load information from a previous version and thereby facilitate a migration.
