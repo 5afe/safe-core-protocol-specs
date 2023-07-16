@@ -48,7 +48,7 @@ Execution types:
 - Multisignature Flow
 - Plugin Flow
 
-TODO: provide more details on execution type and execution meta
+TODO: provide more details on execution type and execution metadata
 
 ## Function handler
 
@@ -60,7 +60,7 @@ interface ISafeProtocolFunctionHandler {
 }
 ```
 
-static version (invoked via `staticcall`)
+    function metadataProvider() external view returns (uint256 type, bytes memory location);
 
 ```solidity
 interface ISafeProtocolStaticFunctionHandler {
