@@ -1,10 +1,10 @@
 # Registry
 
-The `Registry` keeps track of all `Integrations` and if they comply to the `correct conduct and procedures`.
+The `Registry` serves a critical function in the Safe{Core} Protocol by keeping track of all `Integrations` and ensuring they comply with the prescribed `rules`.
 
-Therefore it also MUST define the `correct conduct and procedures`. Different mechanisms and tools then can be used to check and enforce these. Examples for this could be **Audits** and **Bug Bounties**. The `Manager` makes use of the `Registry` to check that only interaction with `Integrations` that comply to the conduct and procedures are possible.
+To fulfil this role, the Registry MUST define the `rules` that Integrations should adhere to. Various mechanisms, such as **audits** and **bug bounties**, can be employed to verify and enforce these rules. The `Manager` interacts with the `Registry` to confirm that only approved Integrations are allowed.
 
-For this the registry MUST implement the following interface:
+To facilitate these operations, the `Registry` MUST implement the following interface:
 
 ```solidity
 interface SafeProtocolRegistry {
@@ -16,11 +16,10 @@ interface SafeProtocolRegistry {
 ```
 
 ## Hyperstructures and Authorities
-
-- https://mirror.xyz/konradkopp.eth/7Q3TrMFgx2VbZRKa7UEaisIMjimpMABiqGYo00T9egA
+For a detailed discussion on Hyperstructures and Authorities and their role in the protocol, refer to this [article](https://mirror.xyz/konradkopp.eth/7Q3TrMFgx2VbZRKa7UEaisIMjimpMABiqGYo00T9egA).
 
 ## Automation
 
-Currently it is required that users manually keep track of their plug-ins and deactivate them in the case that issues arise. Having a more automated approach will be able to protect users better. This needs to be balances with a system that prevents that parts of the protocol are not just maliciously deactivated. Here the possibility of "local overwrites", "temporary deactivation" and "putting something at stake" need to be evaluated.
+Current protocol requirements necessitate users to manually monitor their plugins and deactivate them if problems occur. Implementing a more automated approach enhances user protection. However, this needs to be balanced with a system that prevents parts of the protocol from being maliciously deactivated. Here, we need to evaluate mechanisms such as local overwrites, temporary deactivation, and stake-based systems.
 
-Another challenge with registries is to properly connect them to the relevant parts of the tech stack. Here a push model could provide quite some benefits over a pull model. This is quite challenging to implement, but using different incentives it is possible to motivate a "semi-push" approach where external parties are responsible for the propagation and get rewarded for this.
+A significant challenge with registries lies in their integration with relevant tech stack components. Implementing a push model, where information is actively sent to the necessary parts of the system, could offer significant advantages over a pull model. Though this model is challenging to implement, it's possible to incentivize a "semi-push" approach where external parties are responsible for data propagation and are rewarded for their efforts.

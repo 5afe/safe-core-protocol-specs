@@ -1,6 +1,6 @@
-# Protocol Manager
+# Manager
 
-As the core part of the protocol the `Protocol Manager` is responsible to **enforce** the correct conduct and procedures in the protocol. For this it sits between the `Accounts`and `Integrations` and acts as a intermediate layer that coordinates all the communication and interaction between these.
+At the heart of the protocol is the `Manager`, ensuring adherence to the prescribed conduct and procedures set by the `Registry`. The `Manager` serves as an intermediary layer coordinating communication and interactions between `Accounts` and `Integrations`.
 
 ## General Types
 
@@ -54,7 +54,7 @@ To handle return data for `executeTransaction` (as it is an array of actions)
 
 As mentioned before it is required that both `SafeTransaction` and `SafeRootAccess` can be uniquely identified. An example where this is important is tooling related to indexing and querying information for the integrations. For this purpose a `nonce` field is present in the structs, which allows to make the hash calculated for these is unique.
 
-Note: It is the responsibility of the integration (i.e. plug-in) to ensure that each of structs can be uniquely identified.
+**Important:** It is the responsibility of the integration (i.e. plug-in) to ensure that each of structs can be uniquely identified.
 
 ## Flow Charts
 
@@ -99,6 +99,8 @@ sequenceDiagram
 
 ## Automatic Enforcements
 
+TBD
+
 ## Upgradeability  
 
-It is inevitable that more features will be added to Safe{Core} Protocol (e.g. new integration). As the Manager is the central part of this setup, it is important to consider a path for integrating these new features. Using an upgradeable proxy for the Manager would introduce unacceptable security concerns. Separating too much of the functionality into separate contract to allow reusability (i.e. the list of enabled integration) would increase the gas costs, and so is also not practical. A common and acceptable pattern is to allow a new version to load information from the previous version and thereby allow an information migration.
+It is inevitable that more features will be added to Safe{Core} Protocol (e.g. new integrations). As the Manager is the central part of this setup, it is important to consider a path for integrating these new features. Using an upgradeable proxy for the Manager would introduce unacceptable security concerns. Separating too much of the functionality into separate contract to allow reusability (i.e. the list of enabled integration) would increase the gas costs, and so is also not practical. A better pattern is to allow new versions of the Manager to load information from a previous version and thereby facilitate a migration.
