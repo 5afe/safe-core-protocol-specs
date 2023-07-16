@@ -1,6 +1,6 @@
 # Objective
 
-In order for Ethereum to succeed there needs to be a (transition)[https://vitalik.ca/general/2023/06/09/three_transitions.html] of user accounts to smart-contract based accounts (“smart accounts”). This transition is enabled through account abstraction and supported by efforts like ERC-4337, ERC-6900, and others. However, there are some challenges that have to be addressed in order to ensure the success of the smart account ecosystem.
+In order for Ethereum to succeed there needs to be a (transition)[https://vitalik.ca/general/2023/06/09/three_transitions.html] of user accounts to smart-contract based accounts (“smart accounts”). This transition is enabled through account abstraction and supported by efforts like [ERC-4337](https://eips.ethereum.org/EIPS/eip-4337), [ERC-6900](https://eips.ethereum.org/EIPS/eip-6900), and others. However, there are some challenges that have to be addressed in order to ensure the success of the smart account ecosystem.
 
 - **Portability:** Current user-accounts (EOAs) are a widely accepted standard allowing accounts to be portable across wallets and applications. Smart accounts may create vendor lock-in due to wallets creating their proprietary smart accounts which is a step back from current fully portable EOA accounts.
 - **Composability:** With multiple teams building smart accounts, tooling, standards and applications may have to choose which one(s) to be compatible with. This may result in a major fragmentation of the Ethereum ecosystem.
