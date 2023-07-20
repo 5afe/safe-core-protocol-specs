@@ -16,7 +16,7 @@ The goal is to create a comprehensive system, designed to enhance the safety and
 
 ## Architecture
 
-<img src="./_assets/architecture_overview.png" width=600 alt="Architecture Overview" />
+<img src="./_assets/architecture_overview.png" width=800 alt="Architecture Overview" />
 
 The architecture of the Safe{Core} Protocol is composed of several integral components, each carrying its unique responsibilities. The protocol is designed to distinctly separate these elements by defining explicit interfaces, thus allowing independent expansion and iteration of each part. This modularity ensures the sustainable growth and evolution of the smart account ecosystem.
 
