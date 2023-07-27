@@ -12,7 +12,7 @@ Safe{Core} Protocol is an open, modular framework to make smart accounts secure,
 
 The goal is to create a comprehensive system, designed to enhance the safety and flexibility of user interactions within the smart account ecosystem. The protocol provides a common framework for building additional tools, encourages the composition of various integrations, and supports different types of smart accounts. In order to achieve interoperability and security, the protocol enforces a set of rules within the smart account ecosystem.
 
-[Read more on "Objectives" ->](/objective/README.md)
+[👉 Read more on "Objectives"](/objective/README.md)
 
 ## Architecture
 
@@ -24,25 +24,25 @@ The architecture of the Safe{Core} Protocol is composed of several integral comp
 
 At the heart of the protocol is the `Manager`, ensuring adherence to the prescribed rules set by the `Registry`. The `Manager` serves as an intermediary layer coordinating communication and interactions between `Accounts` and `Integrations`.
 
-[Read more on "Manager" ->](/manager/README.md)
+[👉 Read more on "Manager"](/manager/README.md)
 
 ### Accounts
 
 `Accounts` are smart-contract based user accounts (or “smart accounts”). The Safe{Core} Protocol is account-agnostic, meaning that it is not tied to a specific account implementation.
 
-[Read more on "Accounts" ->](/accounts/README.md)
+[👉 Read more on "Accounts"](/accounts/README.md)
 
 ### Integrations
 
 `Integrations` extend the functionality of `Accounts` in different ways. Initial integrations are plugins, hooks, function handlers and signature verifiers, but additional integrations can be added to the Safe{Core} Protocol at a later point.
 
-[Read more on "Integrations" ->](/integrations/README.md)
+[👉 Read more on "Integrations"](/integrations/README.md)
 
 ### Registry
 
 The `Registry` plays a critical role in maintaining and enforcing standards and security guarantees. Only the `Integrations` that adhere to these guidelines will be recognized and managed by the `Manager`.
 
-[Read more on "Registry" ->](/registry/README.md)
+[👉 Read more on "Registry"](/registry/README.md)
 
 ### Metadata
 
