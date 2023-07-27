@@ -72,7 +72,7 @@ Kudos to @mfw78
 
 ## Signature verifiers
 
-There are continuous efforts to expand the types of signatures supported by the EVM beyond the currently predominant secp256k1 elliptic curve. For example, a signature scheme gaining popularity is based on the secp256r1 elliptic curve (see EIP-7212). Signature Verifiers allow accounts to support new standards and enable use-cases such as Passkeys-enabled smart accounts, BLS/Schnorr or quantum-secure signatures.
+Signature Verifiers leverage the underutilized ERC-1271 standard, enabling customizable logic for signature verification. Signature Verifiers incorporate off-chain functions, increasing the versatility of smart accounts. An example of this approach is [CowSwap’s Time-Weighted Average Price (TWAP)](https://github.com/rndlabs/cowswap-twap-orders) integration.
 
 References:
 - https://github.com/zerodevapp/kernel/blob/main/src/validator/IValidator.sol
