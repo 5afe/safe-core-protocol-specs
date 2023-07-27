@@ -49,4 +49,4 @@ The `Registry` plays a critical role in maintaining and enforcing standards and 
 To provide a coherent context to the various parts and their interactions, the provision of `Metadata` is crucial. This information allows developers to append additional context to interactions, enhancing user understanding and interaction transparency.
 
 
-[Read more on "Metadata" ->](/metadata/README.md)
+[👉 Read more on "Metadata"](/metadata/README.md)
