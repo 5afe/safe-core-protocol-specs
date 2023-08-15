@@ -1,6 +1,8 @@
 # Safe{Core} Protocol Specification
 
+
 See also:
+- [Protocol Whitepaper](./whitepaper.pdf)
 - [Protocol Implementation](https://github.com/5afe/safe-core-protocol)
 - [Protocol Demo Application](https://github.com/5afe/safe-core-protocol-demo/)
 
