@@ -1,8 +1,8 @@
 # Registry
 
-The `Registry` serves a critical function in the Safe{Core} Protocol by keeping track of all `Integrations` and ensuring they comply with the prescribed `rules`.
+The `Registry` serves a critical function in the Safe{Core} Protocol by keeping track of all `Modules` and ensuring they comply with the prescribed `rules`.
 
-To fulfil this role, the Registry MUST define the `rules` that Integrations should adhere to. Various mechanisms, such as **audits** and **bug bounties**, can be employed to verify and enforce these rules. The `Manager` interacts with the `Registry` to confirm that only approved Integrations are allowed.
+To fulfil this role, the Registry MUST define the `rules` that Modules should adhere to. Various mechanisms, such as **audits** and **bug bounties**, can be employed to verify and enforce these rules. The `Manager` interacts with the `Registry` to confirm that only approved Modules are allowed.
 
 To facilitate these operations, the `Registry` MUST implement the following interface:
 
