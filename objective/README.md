@@ -21,9 +21,9 @@ The objective of the protocol is to `enforce` a set of `rules` within the `smart
         - App store (listing requirements)
         - Https
 - What is the `smart account ecosystem`?
-    - Contracts: Plugins, Hooks, Signature Verifiers, Function Handlers
+    - Contracts: Plugins, Hooks, Signature Validators, Function Handlers
     - Infrastructure: Indexers, Relayers, …
     - Interfaces: Web Interfaces, dApps, …
 
 
-This initial version of Safe{Core} Protocol has a strong focus on onchain components (accounts, integrations). In the long run, the protocol should also cover offchain components (indexers, user interfaces). 
+This initial version of Safe{Core} Protocol has a strong focus on onchain components (accounts, modules). In the long run, the protocol should also cover offchain components (indexers, user interfaces). 

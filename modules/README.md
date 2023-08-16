@@ -1,6 +1,6 @@
-# Integrations
+# Modules
 
-Integrations extend the functionality of Accounts in different ways. Initial integrations are `plugins`, `hooks`, `function handlers` and `signature verifiers`, but additional integrations can be added to the Safe{Core} Protocol at a later point.
+Modules extend the functionality of Accounts in different ways. Initial modules are `plugins`, `hooks`, `function handlers` and `signature validators`, but additional modules can be added to the Safe{Core} Protocol at a later point.
 
 [General Types](../manager/README.md#general-types)
 
@@ -70,28 +70,26 @@ interface ISafeProtocolStaticFunctionHandler {
 
 Kudos to @mfw78
 
-## Signature verifiers
+## Signature validators
 
-There are continuous efforts to expand the types of signatures supported by the EVM beyond the currently predominant secp256k1 elliptic curve. For example, a signature scheme gaining popularity is based on the secp256r1 elliptic curve (see EIP-7212). Signature Verifiers allow accounts to support new standards and enable use-cases such as Passkeys-enabled smart accounts, BLS/Schnorr or quantum-secure signatures.
+There are continuous efforts to expand the types of signatures supported by the EVM beyond the currently predominant secp256k1 elliptic curve. For example, a signature scheme gaining popularity is based on the secp256r1 elliptic curve (see EIP-7212). Signature Validators allow accounts to support new standards and enable use-cases such as Passkeys-enabled smart accounts, BLS/Schnorr or quantum-secure signatures.
 
 References:
 - https://github.com/zerodevapp/kernel/blob/main/src/validator/IValidator.sol
 
 
-- EIP-712 based Signature Verifier
+- EIP-712 based Signature Validator
 
 ```solidity
-interface ISafeProtocol712SignatureVerifier {
+interface ISafeProtocol712SignatureValidator {
     /**
-     * @dev If called by `SignatureVerifierMuxer`, the following has already been checked:
-     *      _hash = h(abi.encodePacked("\x19\x01", domainSeparator, h(typeHash || encodeData)));
      * @param safe The Safe that has delegated the signature verification
      * @param sender The address that originally called the Safe's `isValidSignature` method
      * @param _hash The EIP-712 hash whose signature will be verified
      * @param domainSeparator The EIP-712 domainSeparator
      * @param typeHash The EIP-712 typeHash
      * @param encodeData The EIP-712 encoded data
-     * @param payload An arbitrary payload that can be used to pass additional data to the verifier
+     * @param payload An arbitrary payload that can be used to pass additional data to the validator
      * @return magic The magic value that should be returned if the signature is valid (0x1626ba7e)
      */
     function isValidSignature(

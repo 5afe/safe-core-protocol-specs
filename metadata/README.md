@@ -55,7 +55,7 @@ struct EIP712Domain {
 - Types
 
 ```solidity
-struct IntegrationMetadata {
+struct ModuleMetadata {
     string name,
     string description,
     string version
