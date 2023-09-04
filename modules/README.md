@@ -36,19 +36,20 @@ Hooks can check any interaction done with an `Account` via the `Manager`, and al
 
 ```solidity
 interface ISafeProtocolHooks {
-    function preCheck(Safe safe, SafeTransaction tx, uint256 executionType, bytes calldata executionMeta) external returns (bytes memory preCheckData);
+    function preCheck(Safe safe, SafeTransaction tx, uint8 executionType, bytes calldata executionMeta) external returns (bytes memory preCheckData);
 
-    function preCheckRootAccess(Safe safe, SafeRootAccess rootAccess, uint256 executionType, bytes calldata executionMeta) external returns (bytes memory preCheckData);
+    function preCheckRootAccess(Safe safe, SafeRootAccess rootAccess, uint8 executionType, bytes calldata executionMeta) external returns (bytes memory preCheckData);
 
     function postCheck(Safe safe, bool success, bytes calldata preCheckData) external;
 }
 ```
 
-Execution types:
-- Multisignature Flow
-- Plugin Flow
+| Execution Type      | Value |
+|---------------------|-------|
+| Multisignature Flow | `0`   |
+| Plugin Flow         | `1`   |
 
-TODO: provide more details on execution type and execution metadata
+TODO: provide more details on execution metadata
 
 ## Function handler
 
