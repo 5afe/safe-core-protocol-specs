@@ -44,10 +44,10 @@ interface ISafeProtocolHooks {
 }
 ```
 
-| Execution Type       | Value |
-|----------------------|-------|
+| Execution Type      | Value |
+|---------------------|-------|
 | Multisignature Flow | `0`   |
-| Plugin Flow          | `1`   |
+| Plugin Flow         | `1`   |
 
 TODO: provide more details on execution metadata
 
