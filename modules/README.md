@@ -18,9 +18,19 @@ interface ISafeProtocolPlugIn {
 
     function metaProvider() external view returns (uint256 type, bytes memory location);
 
-    function requiresRootAccess() external view returns (bool requiresRootAccess);
+    function requiresPermission(uint8 permissionId) external view returns (bool isPermissionRequired);
 }
 ```
+
+### Plugin permissions
+
+The table below elaborates the possible values of the `permissionId` parameter. For each transaction, the `Manager` will check if the plugin requires a permission and if so, it will check if the plugin has the required permission. Each permission should be granted by the account explicitly. There is no hierarchy or precedence order for the permissions.
+
+| **Permission name**  | **Value** | **Description**                                                                                                                                                                                                                                                                                  |
+|----------------------|-----------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| EXECUTE_CALL         | `0`       | Plugin can invoke `CALL` transactions through an account but, value of `to` cannot be the account itself.                                                                                                                                                                                        |
+| CALL_TO_SELF         | `1`       | Plugin can invoke `CALL` transactions through an account but, value of `to` can only be the account itself. This permission is useful in cases where a plugin needs to modify the state of the account. For example, swapping owner of the account with a new owner during the recovery process. |
+| EXECUTE_DELEGATECALL | `2`       | Plugin can invoke `DELEGATECALL` transactions through the account with no restriction on parameter values                                                                                                                                                                                        |
 
 ### Plugin Interface Extensions
 
