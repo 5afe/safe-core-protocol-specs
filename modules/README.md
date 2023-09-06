@@ -18,19 +18,31 @@ interface ISafeProtocolPlugIn {
 
     function metaProvider() external view returns (uint256 type, bytes memory location);
 
-    function requiresPermission(uint8 permissionId) external view returns (bool isPermissionRequired);
+    function requiresPermission() external view returns (uint8 requiresPermissions);
 }
 ```
 
 ### Plugin permissions
 
-The table below elaborates the possible values of the `permissionId` parameter. For each transaction, the `Manager` will check if the plugin requires a permission and if so, it will check if the plugin has the required permission. Each permission should be granted by the account explicitly. There is no hierarchy or precedence order for the permissions.
+The table below elaborates the permission types that a plugin can have. For each transaction, the `Manager` will check if the plugin has the required permission. Each permission should be granted by the account explicitly. There is no hierarchy or precedence order for the permissions.
 
 | **Permission name**  | **Value** | **Description**                                                                                                                                                                                                                                                                                  |
 |----------------------|-----------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| EXECUTE_CALL         | `0`       | Plugin can invoke `CALL` transactions through an account but, value of `to` cannot be the account itself.                                                                                                                                                                                        |
-| CALL_TO_SELF         | `1`       | Plugin can invoke `CALL` transactions through an account but, value of `to` can only be the account itself. This permission is useful in cases where a plugin needs to modify the state of the account. For example, swapping owner of the account with a new owner during the recovery process. |
-| EXECUTE_DELEGATECALL | `2`       | Plugin can invoke `DELEGATECALL` transactions through the account with no restriction on parameter values                                                                                                                                                                                        |
+| EXECUTE_CALL         | `1`       | Plugin can invoke `CALL` transactions through an account but, value of `to` cannot be the account itself.                                                                                                                                                                                        |
+| CALL_TO_SELF         | `2`       | Plugin can invoke `CALL` transactions through an account but, value of `to` can only be the account itself. This permission is useful in cases where a plugin needs to modify the state of the account. For example, swapping owner of the account with a new owner during the recovery process. |
+| EXECUTE_DELEGATECALL | `4`       | Plugin can invoke `DELEGATECALL` transactions through the account with no restriction on parameter values                                                                                                                                                                                        |
+
+Inspired from [EIP-6617](https://eips.ethereum.org/EIPS/eip-6617), must `requiresPermission()` returns a `uint8` that represents bit-based permissions. The manager interprets the returned value as a bit-based permission and checks if the Plugin has the required permission.
+
+| Permission                                         | Bit Representation | uint8 Value |
+|----------------------------------------------------|--------------------|-------------|
+| EXECUTE_CALL                                       | 00000001           | 1           |
+| CALL_TO_SELF                                       | 00000010           | 2           |
+| EXECUTE_DELEGATECALL                               | 00000100           | 4           |
+| EXECUTE_CALL + CALL_TO_SELF                        | 00000011           | 3           |
+| EXECUTE_CALL + EXECUTE_DELEGATECALL                | 00000101           | 5           |
+| CALL_TO_SELF + EXECUTE_DELEGATECALL                | 00000110           | 6           |
+| EXECUTE_CALL + CALL_TO_SELF + EXECUTE_DELEGATECALL | 00000111           | 7           |
 
 ### Plugin Interface Extensions
 
