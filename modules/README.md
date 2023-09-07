@@ -32,7 +32,7 @@ The table below elaborates the permission types that a plugin can have. For each
 | CALL_TO_SELF         | `2`       | Plugin can invoke `CALL` transactions through an account but, value of `to` can only be the account itself. This permission is useful in cases where a plugin needs to modify the state of the account. For example, swapping owner of the account with a new owner during the recovery process. |
 | EXECUTE_DELEGATECALL | `4`       | Plugin can invoke `DELEGATECALL` transactions through the account with no restriction on parameter values                                                                                                                                                                                        |
 
-Inspired from [EIP-6617](https://eips.ethereum.org/EIPS/eip-6617), must `requiresPermission()` returns a `uint8` that represents bit-based permissions. The manager interprets the returned value as a bit-based permission and checks if the Plugin has the required permission.
+Inspired from [EIP-6617](https://eips.ethereum.org/EIPS/eip-6617), must `requiresPermissions()` returns a `uint8` that represents bit-based permissions. The manager interprets the returned value as a bit-based permission and checks if the Plugin has the required permission.
 
 | Permission                                         | Bit Representation | uint8 Value |
 |----------------------------------------------------|--------------------|-------------|
