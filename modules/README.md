@@ -18,7 +18,7 @@ interface ISafeProtocolPlugIn {
 
     function metaProvider() external view returns (uint256 type, bytes memory location);
 
-    function requiresPermission() external view returns (uint8 requiresPermissions);
+    function requiresPermissions() external view returns (uint8 permissions);
 }
 ```
 
