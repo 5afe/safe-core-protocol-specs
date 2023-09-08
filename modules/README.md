@@ -66,6 +66,15 @@ interface ISafeProtocolHooks {
 }
 ```
 
+### Parameter `executionMeta` value
+
+| Execution Type      | Value                                                                                                                                       |
+|---------------------|---------------------------------------------------------------------------------------------------------------------------------------------|
+| Multisignature Flow | Encoded data of the transaction i.e. `abi.encode(to, value, data,gas, baseGas, gasPrice, gasToken, refundReceiver, signatures, msgSender )` |
+| Plugin Flow         | Encoded address of the Plugin i.e. `abi.encode(pluginAddress)`                                                                              |
+
+### Parameter `executionType` value
+
 | Execution Type      | Value |
 |---------------------|-------|
 | Multisignature Flow | `0`   |
