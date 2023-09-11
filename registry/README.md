@@ -2,7 +2,8 @@
 
 The `Registry` serves a critical function in the Safe{Core} Protocol by keeping track of all `Modules` and ensuring they comply with the prescribed `rules`.
 
-To fulfil this role, the Registry MUST define the `rules` that Modules should adhere to. Various mechanisms, such as **audits** and **bug bounties**, can be employed to verify and enforce these rules. The `Manager` interacts with the `Registry` to confirm that only approved Modules are allowed.
+
+To fulfill this role, the Registry MUST define the `rules` that Modules should adhere to. Various mechanisms, such as **audits** and **bug bounties**, can be employed to verify and enforce these rules. The `Manager` interacts with the `Registry` to confirm that only approved Modules are allowed.
 
 To facilitate these operations, the `Registry` MUST implement the following interface:
 
@@ -10,7 +11,7 @@ To facilitate these operations, the `Registry` MUST implement the following inte
 interface SafeProtocolRegistry {
     /// @param integration Address of the integration that should be checked 
     /// @return listedAt MUST return the block number when the integration was listed in the registry (or 0 if not listed)  
-    /// @return flaggedAt MUST return the block number when the integration was listed in the flagged as faulty (or 0 if not flagged)  
+    /// @return flaggedAt MUST return the block number when the integration was flagged as faulty (or 0 if not flagged)  
     function check(address integration) external view returns (uint256 listedAt, uint256 flaggedAt);
 }
 ```
