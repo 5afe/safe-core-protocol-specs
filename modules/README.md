@@ -58,11 +58,11 @@ Hooks can check any interaction done with an `Account` via the `Manager`, and al
 
 ```solidity
 interface ISafeProtocolHooks {
-    function preCheck(Safe safe, SafeTransaction tx, uint8 executionType, bytes calldata executionMeta) external returns (bytes memory preCheckData);
+    function preCheck(address account, SafeTransaction tx, uint8 executionType, bytes calldata executionMeta) external returns (bytes memory preCheckData);
 
-    function preCheckRootAccess(Safe safe, SafeRootAccess rootAccess, uint8 executionType, bytes calldata executionMeta) external returns (bytes memory preCheckData);
+    function preCheckRootAccess(address account, SafeRootAccess rootAccess, uint8 executionType, bytes calldata executionMeta) external returns (bytes memory preCheckData);
 
-    function postCheck(Safe safe, bool success, bytes calldata preCheckData) external;
+    function postCheck(address account, bool success, bytes calldata preCheckData) external;
 }
 ```
 
@@ -79,7 +79,7 @@ Non-static version (invoked via `call`)
 
 ```solidity
 interface ISafeProtocolFunctionHandler {
-    function handle(Safe safe, address sender, uint256 value, bytes calldata data) external returns (bytes memory result);
+    function handle(address account, address sender, uint256 value, bytes calldata data) external returns (bytes memory result);
 }
 ```
 
@@ -87,7 +87,7 @@ interface ISafeProtocolFunctionHandler {
 
 ```solidity
 interface ISafeProtocolStaticFunctionHandler {
-    function handle(Safe safe, address sender, uint256 value, bytes calldata data) external view returns (bytes memory result);
+    function handle(address account, address sender, uint256 value, bytes calldata data) external view returns (bytes memory result);
 }
 ```
 
@@ -116,7 +116,7 @@ interface ISafeProtocol712SignatureValidator {
      * @return magic The magic value that should be returned if the signature is valid (0x1626ba7e)
      */
     function isValidSignature(
-        Safe safe,
+        address account,
         address sender,
         bytes32 _hash,
         bytes32 domainSeparator,
