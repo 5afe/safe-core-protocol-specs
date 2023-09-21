@@ -9,10 +9,13 @@ To facilitate these operations, the `Registry` MUST implement the following inte
 
 ```solidity
 interface SafeProtocolRegistry {
-    /// @param integration Address of the integration that should be checked 
-    /// @return listedAt MUST return the block number when the integration was listed in the registry (or 0 if not listed)  
-    /// @return flaggedAt MUST return the block number when the integration was flagged as faulty (or 0 if not flagged)  
-    function check(address integration) external view returns (uint256 listedAt, uint256 flaggedAt);
+    /** @param module Address of the module that should be checked
+     * @return listedAt MUST return the block number when the module was listed in the registry (or 0 if not listed)
+     * @return flaggedAt MUST return the block number when the module was listed in the flagged as faulty (or 0 if not flagged)
+     * @return moduleTypes uint8 indicating the types of module that the contract can be used as in the protocol.
+     *                     The value is a bitwise OR of the module types.
+     */
+    function check(address module) external view returns (uint64 listedAt, uint64 flaggedAt, uint8 moduleTypes);
 }
 ```
 

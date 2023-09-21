@@ -4,6 +4,16 @@ Modules extend the functionality of Accounts in different ways. Initial modules 
 
 [General Types](../manager/README.md#general-types)
 
+## Module Types
+
+Each module is assigned a value that represents the type of module it is. The value is a power of 2, which allows for bitwise operations to check if a module has a specific type and efficient storage in a using storage slot. The table below lists the module types and their corresponding values. A contract can be used as multiple module types.
+
+| Module type      | Value |
+|------------------|-------|
+| Plugin           | 1     |
+| Function Handler | 2     |
+| Hooks            | 4     |
+
 ## Plugins
 
 Plugins allow to add any arbitrary logic to an account such as recovery mechanisms, session keys, and automations.
