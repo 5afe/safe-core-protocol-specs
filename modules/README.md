@@ -68,10 +68,10 @@ interface ISafeProtocolHooks {
 
 ### Parameter `executionMeta` value
 
-| Execution Type      | Value                                                                                                                                       |
-|---------------------|---------------------------------------------------------------------------------------------------------------------------------------------|
-| Multisignature Flow | Encoded data of the transaction i.e. `abi.encode(to, value, data,gas, baseGas, gasPrice, gasToken, refundReceiver, signatures, msgSender )` |
-| Plugin Flow         | Encoded address of the Plugin i.e. `abi.encode(pluginAddress)`                                                                              |
+| Execution Type                                                                                                                                                                                  | Value                                                                                                                                                                                        |
+|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Multisignature Flow (for accounts that use  [Guard interface](https://github.com/safe-global/safe-contracts/blob/8ffae95faa815acf86ec8b50021ebe9f96abde10/contracts/base/GuardManager.sol#L10)) | Encoded data created from parameter values received from `checkTransaction(...)` i.e. `abi.encode(to, value, data, gas, baseGas, gasPrice, gasToken, refundReceiver, signatures, msgSender)` |
+| Plugin Flow                                                                                                                                                                                     | Encoded address of the Plugin i.e. `abi.encode(pluginAddress)`                                                                                                                               |
 
 ### Parameter `executionType` value
 
