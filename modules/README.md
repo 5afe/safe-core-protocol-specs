@@ -6,7 +6,7 @@ Modules extend the functionality of Accounts in different ways. Initial modules 
 
 ## Module Types
 
-Each module is assigned a value that represents the type of module it is. The value is a power of 2, which allows for bitwise operations to check if a module has a specific type and efficient storage in a using storage slot. The table below lists the module types and their corresponding values. A contract can be used as multiple module types.
+Each module is assigned a value that represents the type of module it is. The value is a power of 2, which permits bitwise operations and efficient storage of values. The table below lists the module types and their corresponding values. A contract can be used as multiple module types.
 
 | Module type      | Value |
 |------------------|-------|
