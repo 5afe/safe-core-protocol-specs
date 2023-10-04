@@ -146,4 +146,27 @@ interface ISafeProtocol712SignatureValidator {
 }
 ```
 
+### Sequence diagram for Signature Validation
+
+The diagram below illustrates the sequence of calls that are made when a signature is validated. The `Account` sets the `SignatureValidatorContract` via the `SignatureValidatorManager`. When a signature for an account is to be validated by an external entity, here referred as `ExternalContract`, the `ExternalContract` contract calls the `SignatureValidatorManager` which checks if the `SignatureValidatorContract` is listed and not flagged. If the contract is listed and not flagged, the `SignatureValidatorManager` calls the `SignatureValidatorContract` to check if the signature is valid.
+
+```mermaid
+sequenceDiagram
+	participant Account
+	participant ExternalContract
+	participant SignatureValidatorManager
+	participant RegistryContract
+	participant SignatureValidatorContract
+
+	Account->>SignatureValidatorManager: Set SignatureValidatorContract
+		SignatureValidatorManager->>RegistryContract: Check if contract is listed and not flagged
+		RegistryContract-->>SignatureValidatorManager: Return result
+	ExternalContract->>SignatureValidatorManager: Ask if signature is valid for the account (Call isValidSignature(bytes32,bytes))
+	SignatureValidatorManager->>RegistryContract: Check if contract is listed and not flagged
+	RegistryContract-->>SignatureValidatorManager: Return result
+	SignatureValidatorManager->>SignatureValidatorContract: Check for signature validity (call isValidSignature(...))
+	SignatureValidatorContract-->>SignatureValidatorManager: Return signature validation result
+	SignatureValidatorManager-->>ExternalContract: Return signature validation result
+```
+
 Kudos to @mfw78
