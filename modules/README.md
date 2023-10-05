@@ -117,7 +117,7 @@ Kudos to @mfw78
 There are continuous efforts to expand the types of signatures supported by the EVM beyond the currently predominant secp256k1 elliptic curve. For example, a signature scheme gaining popularity is based on the secp256r1 elliptic curve (see EIP-7212). Signature Validators allow accounts to support new standards and enable use-cases such as Passkeys-enabled smart accounts, BLS/Schnorr or quantum-secure signatures.
 
 References:
-- https://github.com/zerodevapp/kernel/blob/main/src/validator/IValidator.sol
+- https://github.com/zerodevapp/kernel/blob/main/src/interfaces/IValidator.sol
 
 
 - EIP-712 based Signature Validator
