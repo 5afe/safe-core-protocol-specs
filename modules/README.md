@@ -116,7 +116,7 @@ Kudos to @mfw78
 
 There are continuous efforts to expand the types of signatures supported by the EVM beyond the currently predominant secp256k1 elliptic curve. For example, a signature scheme gaining popularity is based on the secp256r1 elliptic curve (see EIP-7212). Signature Validators allow accounts to support new standards and enable use-cases such as Passkeys-enabled smart accounts, BLS/Schnorr or quantum-secure signatures.
 
-When a contract wants to verify account signature, it should call `isValidSignature(bytes32,bytes)` on the account and the account further handover the validation step to the `SignatureValidatorManager`.
+When a contract wants to verify account signature, it should call `isValidSignature(bytes32,bytes)` on the account and the account calls the `SignatureValidatorManager` for validation.
 
 References:
 - https://github.com/zerodevapp/kernel/blob/main/src/interfaces/IValidator.sol
