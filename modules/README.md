@@ -116,6 +116,8 @@ Kudos to @mfw78
 
 There are continuous efforts to expand the types of signatures supported by the EVM beyond the currently predominant secp256k1 elliptic curve. For example, a signature scheme gaining popularity is based on the secp256r1 elliptic curve (see EIP-7212). Signature Validators allow accounts to support new standards and enable use-cases such as Passkeys-enabled smart accounts, BLS/Schnorr or quantum-secure signatures.
 
+When a contract wants to verify account signature, it should call `isValidSignature(bytes32,bytes)` on the account and the account further handover the validation step to the `SignatureValidatorManager`.
+
 References:
 - https://github.com/zerodevapp/kernel/blob/main/src/interfaces/IValidator.sol
 
@@ -146,6 +148,29 @@ interface ISafeProtocol712SignatureValidator {
 }
 ```
 
+- Signature Validator Manager
+
+
+```solidity
+interface ISafeProtocolSignatureValidatorManager {
+    /**
+     * @param dataHash Hash of the data that is signed
+     * @param data Arbitrary data containing the following layout:
+     *             Layout of the data:
+     *              0x00 - 0x04: selector
+     *              0x04 - 0x36: domainSeparator
+     *              0x36 - 0x68: typeHash
+     *              0x68 - 0x6C: encodedData length
+     *              0x6C - 0x6C + encodedData length: encodedData
+     *              0x6C + encodedData length - 0x6C + encodedData length + 0x20: payload length
+     *              0x6C + encodedData length + 0x20 - end: payload
+     * @return bytes4 Value returned by the Signature Validator Contract
+     */
+    function isSignatureValid(bytes32 dataHash, bytes data) return (bytes4 magicValue);
+}
+
+```
+
 ### Sequence diagram for Signature Validation
 
 The diagram below illustrates the sequence of calls that are made when a signature is validated. The `Account` sets the `SignatureValidatorContract` via the `SignatureValidatorManager`. When a signature for an account is to be validated by an external entity, here referred as `ExternalContract`, the `ExternalContract` contract calls the `SignatureValidatorManager` which checks if the `SignatureValidatorContract` is listed and not flagged. If the contract is listed and not flagged, the `SignatureValidatorManager` calls the `SignatureValidatorContract` to check if the signature is valid.
@@ -161,12 +186,15 @@ sequenceDiagram
 	Account->>SignatureValidatorManager: Set SignatureValidatorContract
 		SignatureValidatorManager->>RegistryContract: Check if contract is listed and not flagged
 		RegistryContract-->>SignatureValidatorManager: Return result
-	ExternalContract->>SignatureValidatorManager: Ask if signature is valid for the account (Call isValidSignature(bytes32,bytes))
-	SignatureValidatorManager->>RegistryContract: Check if contract is listed and not flagged
+    SignatureValidatorManager-->>Account: Ok
+	ExternalContract->>Account: Check if signature is valid for the account (Call isValidSignature(bytes32,bytes))
+    Account->>SignatureValidatorManager: Call isSignatureValid(bytes32,bytes)
+	SignatureValidatorManager->>RegistryContract: Check if Signature Validator contract is listed and not flagged
 	RegistryContract-->>SignatureValidatorManager: Return result
 	SignatureValidatorManager->>SignatureValidatorContract: Check for signature validity (call isValidSignature(...))
 	SignatureValidatorContract-->>SignatureValidatorManager: Return signature validation result
 	SignatureValidatorManager-->>ExternalContract: Return signature validation result
+    Account-->>ExternalContract: Return signature validation result
 ```
 
 Kudos to @mfw78
