@@ -8,11 +8,12 @@ Modules extend the functionality of Accounts in different ways. Initial modules 
 
 Each module is assigned a value that represents the type of module it is. The value is a power of 2, which permits bitwise operations and efficient storage of values. The table below lists the module types and their corresponding values. A contract can be used as multiple module types.
 
-| Module type      | Value |
-|------------------|-------|
-| Plugin           | 1     |
-| Function Handler | 2     |
-| Hooks            | 4     |
+| Module type         | Value |
+|---------------------|-------|
+| Plugin              | 1     |
+| Function Handler    | 2     |
+| Hooks               | 4     |
+| Signature Validator | 8     |
 
 ## Plugins
 
