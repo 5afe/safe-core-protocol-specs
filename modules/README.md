@@ -158,13 +158,12 @@ interface ISafeProtocolSignatureValidatorManager {
      * @param dataHash Hash of the data that is signed
      * @param data Arbitrary data containing the following layout:
      *             Layout of the data:
-     *              0x00 - 0x04: selector
-     *              0x04 - 0x36: domainSeparator
-     *              0x36 - 0x68: typeHash
-     *              0x68 - 0x6C: encodedData length
-     *              0x6C - 0x6C + encodedData length: encodedData
-     *              0x6C + encodedData length - 0x6C + encodedData length + 0x20: payload length
-     *              0x6C + encodedData length + 0x20 - end: payload
+     *              0x00 - 0x32: signatureValidatorType
+     *              0x32 - 0x64: domainSeparator
+     *              0x64 - 0x68: signature length
+     *              todo : signature
+     *              todo : payload length
+     *              todo : payload
      * @return bytes4 Value returned by the Signature Validator Contract
      */
     function isSignatureValid(bytes32 dataHash, bytes data) return (bytes4 magicValue);
@@ -173,11 +172,23 @@ interface ISafeProtocolSignatureValidatorManager {
      * @param domain bytes32 containing the domain for which Signature Validator contract should be used
      * @return address Address of the Signature Validator Contract
      */
-    function setSignatureValidator(bytes32 domain, address signatureValidatorContract) external;
+    function setSignatureValidator(uint8 signatureValidatorType, bytes32 domain, address signatureValidatorContract) external;
 }
-
 ```
+
+
+#### Signature Types
+
+Each signature validator is assigned a value that represents its type. The value is a power of 2, which permits bitwise operations and efficient storage of values. The table below lists the types and their corresponding values. A contract can be used as multiple signature validator types.
+
+| Signature Type        | Value |
+|-----------------------|-------|
+| 712SignatureValidator | 1     |
+
+
 ### Sequence diagram for enabling a Signature Validator
+
+An account can enable multiple Signature Validator each supporting a different validation scheme. Each signature validation scheme is differentiated by a `signatureType` value.
 
 ```mermaid
 sequenceDiagram
@@ -185,7 +196,7 @@ sequenceDiagram
 	participant SignatureValidatorManager
 	participant RegistryContract
 
-	Account->>SignatureValidatorManager: Set SignatureValidatorContract for a specific domain
+	Account->>SignatureValidatorManager: Set SignatureValidatorContract for a specific domain along with a signature type.
 		SignatureValidatorManager->>RegistryContract: Check if contract is listed and not flagged
 		RegistryContract-->>SignatureValidatorManager: Return result
     SignatureValidatorManager-->>Account: Ok
