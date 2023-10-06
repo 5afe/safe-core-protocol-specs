@@ -168,8 +168,27 @@ interface ISafeProtocolSignatureValidatorManager {
      * @return bytes4 Value returned by the Signature Validator Contract
      */
     function isSignatureValid(bytes32 dataHash, bytes data) return (bytes4 magicValue);
+
+    /**
+     * @param domain bytes32 containing the domain for which Signature Validator contract should be used
+     * @return address Address of the Signature Validator Contract
+     */
+    function setSignatureValidator(bytes32 domain, address signatureValidatorContract) external;
 }
 
+```
+### Sequence diagram for enabling a Signature Validator
+
+```mermaid
+sequenceDiagram
+	participant Account
+	participant SignatureValidatorManager
+	participant RegistryContract
+
+	Account->>SignatureValidatorManager: Set SignatureValidatorContract for a specific domain
+		SignatureValidatorManager->>RegistryContract: Check if contract is listed and not flagged
+		RegistryContract-->>SignatureValidatorManager: Return result
+    SignatureValidatorManager-->>Account: Ok
 ```
 
 ### Sequence diagram for Signature Validation
@@ -184,10 +203,6 @@ sequenceDiagram
 	participant RegistryContract
 	participant SignatureValidatorContract
 
-	Account->>SignatureValidatorManager: Set SignatureValidatorContract
-		SignatureValidatorManager->>RegistryContract: Check if contract is listed and not flagged
-		RegistryContract-->>SignatureValidatorManager: Return result
-    SignatureValidatorManager-->>Account: Ok
 	ExternalContract->>Account: Check if signature is valid for the account (Call isValidSignature(bytes32,bytes))
     Account->>SignatureValidatorManager: Call isSignatureValid(bytes32,bytes)
 	SignatureValidatorManager->>RegistryContract: Check if Signature Validator contract is listed and not flagged
