@@ -170,25 +170,16 @@ interface ISafeProtocolSignatureValidatorManager {
 
     /**
      * @param domain bytes32 containing the domain for which Signature Validator contract should be used
+     * @param signatureValidatorContract Address of the Signature Validator Contract implementing ISafeProtocol712SignatureValidator interface
      * @return address Address of the Signature Validator Contract
      */
-    function setSignatureValidator(uint8 signatureValidatorType, bytes32 domain, address signatureValidatorContract) external;
+    function setSignatureValidator(bytes32 domain, address signatureValidatorContract) external;
 }
 ```
 
-
-#### Signature Types
-
-Each signature validator is assigned a value that represents its type. The value is a power of 2, which permits bitwise operations and efficient storage of values. The table below lists the types and their corresponding values. A contract can be used as multiple signature validator types.
-
-| Signature Type        | Value |
-|-----------------------|-------|
-| 712SignatureValidator | 1     |
-
-
 ### Sequence diagram for enabling a Signature Validator
 
-An account can enable multiple Signature Validator each supporting a different validation scheme. Each signature validation scheme is differentiated by a `signatureType` value.
+An account can enable multiple Signature Validator each supporting a different validation scheme per domain.
 
 ```mermaid
 sequenceDiagram
@@ -196,15 +187,16 @@ sequenceDiagram
 	participant SignatureValidatorManager
 	participant RegistryContract
 
-	Account->>SignatureValidatorManager: Set SignatureValidatorContract for a specific domain along with a signature type.
+	Account->>SignatureValidatorManager: Set SignatureValidatorContract for a specific domain.
 		SignatureValidatorManager->>RegistryContract: Check if contract is listed and not flagged
 		RegistryContract-->>SignatureValidatorManager: Return result
+    SignatureValidatorManager->>SignatureValidatorManager: Check if SignatureValidatorContract implements ISafeProtocol712SignatureValidator interface
     SignatureValidatorManager-->>Account: Ok
 ```
 
 ### Sequence diagram for Signature Validation
 
-The diagram below illustrates the sequence of calls that are made when a signature is validated. The `Account` sets the `SignatureValidatorContract` via the `SignatureValidatorManager`. When a signature for an account is to be validated by an external entity, here referred as `ExternalContract`, the `ExternalContract` contract calls the `SignatureValidatorManager` which checks if the `SignatureValidatorContract` is listed and not flagged. If the contract is listed and not flagged, the `SignatureValidatorManager` calls the `SignatureValidatorContract` to check if the signature is valid.
+The diagram below illustrates the sequence of calls that are made when a signature is to be validated. The `Account` sets the `SignatureValidatorContract` via the `SignatureValidatorManager`. When a signature for an account is to be validated by an external entity, here referred as `ExternalContract`, the `ExternalContract` contract calls the `isValidSignature(bytes32,bytes)` function supported by the account. Account further calls `SignatureValidatorManager`. If the signature validator contract is set for the account, listed and not flagged, the `SignatureValidatorManager` calls the `SignatureValidatorContract` to check if the signature is valid.
 
 ```mermaid
 sequenceDiagram
