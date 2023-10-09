@@ -156,17 +156,33 @@ interface ISafeProtocol712SignatureValidator {
 interface ISafeProtocolSignatureValidatorManager {
     /**
      * @param dataHash Hash of the data that is signed
-     * @param data Arbitrary data containing the following layout:
-     *             Layout of the data:
-     *              0x00 to 0x32: domainSeparator
-     *              0x32 to 0x64: typeHash
-     *              0x64 to 0x96: encodeData length
-     *              0x96 to <0x96 + encodeData length>: encodeData
-     *              <0x96 + encodeData length> to <0x96 + encodeData length> + 0x32 : payload length
-     *              <0x96 + encodeData length> + 0x32 to end: payload
+
      * @return bytes4 Value returned by the Signature Validator Contract
      */
     function isSignatureValid(bytes32 dataHash, bytes data) return (bytes4 magicValue);
+
+    /**
+     * @notice A view function that the Manager will call when an account has enabled this contract as a function handler in the Manager for function isSignatureValid(bytes32,bytes)
+     * @param account Address of the account whose signature validator is to be used
+     * @param sender Address requesting signature validation
+     * @param data Calldata containing the function selector, signature hash, domain separator, type hash, encoded data and payload forwarded by the Manager
+     *              Arbitrary data containing the following layout:
+     *              Layout of the data:
+     *                  0x00 to 0x04: 4 bytes function selector
+     *                  0x04 to 0x36: dataHash
+     *                  0x36 to 0x68: domainSeparator
+     *                  0x68 to 0x9a: typeHash
+     *                  0x9a to 0xcc: encodeData length
+     *                  0xcc to <0xcc + encodeData length>: encodeData
+     *                  <0xcc + encodeData length> to <0xcc + encodeData length> + 0x32 : payload length
+     *                  <0xcc + encodeData length> + 0x32 to end: payload
+     */
+    function handle(
+        address account,
+        address sender,
+        uint256 /* value */,
+        bytes calldata data
+    ) external view override returns (bytes memory);
 
     /**
      * @param domain bytes32 containing the domain for which Signature Validator contract should be used
