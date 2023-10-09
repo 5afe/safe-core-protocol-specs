@@ -171,9 +171,13 @@ interface ISafeProtocolSignatureValidatorManager {
     /**
      * @param domain bytes32 containing the domain for which Signature Validator contract should be used
      * @param signatureValidatorContract Address of the Signature Validator Contract implementing ISafeProtocol712SignatureValidator interface
-     * @return address Address of the Signature Validator Contract
      */
     function setSignatureValidator(bytes32 domain, address signatureValidatorContract) external;
+
+    /**
+     * @param signatureValidatorHooksContract Address of the contract to be used as Hooks for Signature Validator implementing ISignatureValidatorHook interface
+     */
+    function setSignatureValidatorHooks(address signatureValidatorHooksContract) external;
 }
 ```
 
@@ -194,7 +198,24 @@ sequenceDiagram
     SignatureValidatorManager-->>Account: Ok
 ```
 
-### Sequence diagram for Signature Validation
+### Signature validator hooks
+
+Hooks can be enabled for all validators before and after execution of the validation function. This can be done by adding contract implementing `ISignatureValidatorHook` interface to the `SignatureValidatorManager` by the account.
+The hooks are not specific to a domain and are executed for signature validations.
+
+```solidity
+interface ISignatureValidatorHook {
+    function preValidationHook(address account, bytes32 domain, bytes payload) returns (bool success, bytes32 result) external;
+
+    /**
+     * @param account Address of the account for which signature is being validated
+     * @param preValidationData Data returned by preValidationHook
+     */
+    function postValidationHook(address account, bytes32 preValidationData) returns (bool success, bytes32 result) external;
+}
+```
+
+### Sequence diagram for Signature Validation with hooks
 
 The diagram below illustrates the sequence of calls that are made when a signature is to be validated. The `Account` sets the `SignatureValidatorContract` via the `SignatureValidatorManager`. When a signature for an account is to be validated by an external entity, here referred as `ExternalContract`, the `ExternalContract` contract calls the `isValidSignature(bytes32,bytes)` function supported by the account. Account further calls `SignatureValidatorManager`. If the signature validator contract is set for the account, listed and not flagged, the `SignatureValidatorManager` calls the `SignatureValidatorContract` to check if the signature is valid.
 
@@ -205,6 +226,7 @@ sequenceDiagram
 	participant SignatureValidatorManager
 	participant RegistryContract
 	participant SignatureValidatorContract
+    participant SignatureValidatorHooks
 
 	ExternalContract->>Account: Check if signature is valid for the account (Call isValidSignature(bytes32,bytes))
     Account->>SignatureValidatorManager: Call isSignatureValid(bytes32,bytes)
@@ -212,8 +234,12 @@ sequenceDiagram
     SignatureValidatorManager->>SignatureValidatorManager: Check if Signature Validator contract is enabled for the domain
 	SignatureValidatorManager->>RegistryContract: Check if Signature Validator contract is listed and not flagged
 	RegistryContract-->>SignatureValidatorManager: Return result
+    SignatureValidatorManager->>SignatureValidatorHooks: Execute preValidationHook(...) if enabled
+    SignatureValidatorHooks-->>SignatureValidatorManager: Return result
+
 	SignatureValidatorManager->>SignatureValidatorContract: Check for signature validity (call isValidSignature(...))
 	SignatureValidatorContract-->>SignatureValidatorManager: Return signature validation result
+    SignatureValidatorManager->>SignatureValidatorHooks: Execute postValidationHook(...) if enabled
 	SignatureValidatorManager-->>ExternalContract: Return signature validation result
     Account-->>ExternalContract: Return signature validation result
 ```
