@@ -134,7 +134,7 @@ interface ISafeProtocol712SignatureValidator {
      * @param domainSeparator The EIP-712 domainSeparator
      * @param typeHash The EIP-712 typeHash
      * @param encodeData The EIP-712 encoded data
-     * @param payload An arbitrary payload that can be used to pass additional data to the validator
+     * @param payload An arbitrary payload that can be used to pass additional data to the validator. It can contain signature data.
      * @return magic The magic value that should be returned if the signature is valid (0x1626ba7e)
      */
     function isValidSignature(
@@ -158,12 +158,12 @@ interface ISafeProtocolSignatureValidatorManager {
      * @param dataHash Hash of the data that is signed
      * @param data Arbitrary data containing the following layout:
      *             Layout of the data:
-     *              0x00 - 0x32: signatureValidatorType
-     *              0x32 - 0x64: domainSeparator
-     *              0x64 - 0x68: signature length
-     *              todo : signature
-     *              todo : payload length
-     *              todo : payload
+     *              0x00 to 0x32: domainSeparator
+     *              0x32 to 0x64: typeHash
+     *              0x64 to 0x96: encodeData length
+     *              0x96 to <0x96 + encodeData length>: encodeData
+     *              <0x96 + encodeData length> to <0x96 + encodeData length> + 0x32 : payload length
+     *              <0x96 + encodeData length> + 0x32 to end: payload
      * @return bytes4 Value returned by the Signature Validator Contract
      */
     function isSignatureValid(bytes32 dataHash, bytes data) return (bytes4 magicValue);
@@ -208,6 +208,8 @@ sequenceDiagram
 
 	ExternalContract->>Account: Check if signature is valid for the account (Call isValidSignature(bytes32,bytes))
     Account->>SignatureValidatorManager: Call isSignatureValid(bytes32,bytes)
+    SignatureValidatorManager->>SignatureValidatorManager: Decode data and extract domain, typeHash, encodeData and payload
+    SignatureValidatorManager->>SignatureValidatorManager: Check if Signature Validator contract is enabled for the domain
 	SignatureValidatorManager->>RegistryContract: Check if Signature Validator contract is listed and not flagged
 	RegistryContract-->>SignatureValidatorManager: Return result
 	SignatureValidatorManager->>SignatureValidatorContract: Check for signature validity (call isValidSignature(...))
