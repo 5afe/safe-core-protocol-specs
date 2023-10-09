@@ -134,7 +134,8 @@ interface ISafeProtocol712SignatureValidator {
      * @param domainSeparator The EIP-712 domainSeparator
      * @param typeHash The EIP-712 typeHash
      * @param encodeData The EIP-712 encoded data
-     * @param payload An arbitrary payload that can be used to pass additional data to the validator. It can contain signature data.
+     * @param signature An arbitrary payload that can be used to pass additional data to the validator.
+     * @param additionalData An arbitrary payload that can be used to pass additional data to the validator.
      * @return magic The magic value that should be returned if the signature is valid (0x1626ba7e)
      */
     function isValidSignature(
@@ -144,7 +145,8 @@ interface ISafeProtocol712SignatureValidator {
         bytes32 domainSeparator,
         bytes32 typeHash,
         bytes calldata encodeData,
-        bytes calldata payload
+        bytes calldata signature
+        bytes calldata additionalData
     ) external view returns (bytes4 magic);
 }
 ```
@@ -174,8 +176,10 @@ interface ISafeProtocolSignatureValidatorManager {
      *                  0x68 to 0x9a: typeHash
      *                  0x9a to 0xcc: encodeData length
      *                  0xcc to <0xcc + encodeData length>: encodeData
-     *                  <0xcc + encodeData length> to <0xcc + encodeData length> + 0x32 : payload length
-     *                  <0xcc + encodeData length> + 0x32 to end: payload
+     *                  <0xcc + encodeData length> to <0xcc + encodeData length> + 0x32 : signature length
+     *                  <0xcc + encodeData length> + 0x32 to <0xcc + encodeData length> + 0x32 + signature length: signature
+     *                  <0xcc + encodeData length> + 0x32 + signature length to <0xcc + encodeData length> + 0x32 + signature length + 0x32 : additional data length
+     *                  <0xcc + encodeData length> + 0x32 + signature length + 0x32 to end: additional data
      */
     function handle(
         address account,
