@@ -214,9 +214,6 @@ The Layout of the encoded data received by the signature validator is expected t
 | 0x84                                                        | <0x84 + encodeData length>                                  | encodeData                |
 | <0x84 + encodeData length>                                  | <0x84 + encodeData length> + 0x20                           | signature length          |
 | <0x84 + encodeData length> + 0x20                           | <0x84 + encodeData length> + 0x20 + signature length        | signature                 |
-| <0x84 + encodeData length> + 0x20 + signature length        | <0x84 + encodeData length> + 0x20 + signature length + 0x20 | additional data length    |
-| <0x84 + encodeData length> + 0x20 + signature length + 0x20 | end                                                         | additional data           |
-
 
 ### SignatureValidatorManager with SafeProtocolManager
 
@@ -274,8 +271,6 @@ interface ISafeProtocolSignatureValidatorManager {
      *                  0x84 to <0x84 + encodeData length>: encodeData
      *                  <0x84 + encodeData length> to <0x84 + encodeData length> + 0x20 : signature length
      *                  <0x84 + encodeData length> + 0x20 to <0x84 + encodeData length> + 0x20 + signature length: signature
-     *                  <0x84 + encodeData length> + 0x20 + signature length to <0x84 + encodeData length> + 0x20 + signature length + 0x20 : additional data length
-     *                  <0x84 + encodeData length> + 0x20 + signature length + 0x20 to end: additional data
      */
     function handle(
         address account,
