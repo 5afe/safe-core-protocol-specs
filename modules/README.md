@@ -119,10 +119,6 @@ There are continuous efforts to expand the types of signatures supported by the 
 
 When a contract wants to verify account signature, it should call `isValidSignature(bytes32,bytes)` on the account and the account calls the `SignatureValidatorManager` for validation.
 
-References:
-- https://github.com/zerodevapp/kernel/blob/main/src/interfaces/IValidator.sol
-
-
 ### Signature validator
 
 ```solidity
@@ -280,3 +276,7 @@ sequenceDiagram
 ```
 
 Kudos to @mfw78
+
+References:
+- https://github.com/zerodevapp/kernel/blob/main/src/interfaces/IValidator.sol
+- https://eips.ethereum.org/EIPS/eip-6900
