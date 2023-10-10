@@ -61,6 +61,8 @@ Inspired from [EIP-6617](https://eips.ethereum.org/EIPS/eip-6617), must `require
 
 ## Hooks
 
+### Transaction execution from module hooks
+
 Hooks add additional logic at certain points of the transaction lifecycle. Hooks enable various forms of security protections such as allow- and deny-lists, MEV-protections, risk-assessments, and more. The Safe{Core} Protocol currently recognizes the following types of hooks:
 - `preCheck` / `preCheckRootAccess` verify custom conditions using the state before a transaction is executed
 - `postCheck` verify custom conditions at the end of a transaction and reverts 
@@ -74,6 +76,27 @@ interface ISafeProtocolHooks {
     function preCheckRootAccess(address account, SafeRootAccess rootAccess, uint8 executionType, bytes calldata executionMeta) external returns (bytes memory preCheckData);
 
     function postCheck(address account, bool success, bytes calldata preCheckData) external;
+}
+```
+
+### Signature validator hooks
+
+Hooks can be enabled for all validators before and after execution of the validation function. This can be done by adding contract implementing `ISignatureValidatorHook` interface to the `SignatureValidatorManager` by the account. The hooks are not specific to a domain and are executed for all signature validations. The hooks function(s) should revert on failed checks.
+
+```solidity
+interface ISignatureValidatorHooks {
+    /**
+     * @param account Address of the account for which signature is being validated
+     * @param validator Address of the validator contract to be used for signature validation
+     * @param data Bytes containing domain, typeHash, encodeData length, encodeData, signature length, signature, and additional data length, and additional data
+     */
+    function preValidationHook(address account, address validator, bytes payload) returns (bytes32 result) external;
+
+    /**
+     * @param account Address of the account for which signature is being validated
+     * @param preValidationData Data returned by preValidationHook
+     */
+    function postValidationHook(address account, bytes32 preValidationData) returns (bytes32 result) external;
 }
 ```
 
@@ -205,23 +228,6 @@ interface ISafeProtocolSignatureValidatorManager {
 | <0x84 + encodeData length> + 0x20                           | <0x84 + encodeData length> + 0x20 + signature length        | signature                 |
 | <0x84 + encodeData length> + 0x20 + signature length        | <0x84 + encodeData length> + 0x20 + signature length + 0x20 | additional data length    |
 | <0x84 + encodeData length> + 0x20 + signature length + 0x20 | end                                                         | additional data           |
-
-### Signature validator hooks
-
-Hooks can be enabled for all validators before and after execution of the validation function. This can be done by adding contract implementing `ISignatureValidatorHook` interface to the `SignatureValidatorManager` by the account.
-The hooks are not specific to a domain and are executed for signature validations.
-
-```solidity
-interface ISignatureValidatorHooks {
-    function preValidationHook(address account, bytes32 domain, bytes payload) returns (bool success, bytes32 result) external;
-
-    /**
-     * @param account Address of the account for which signature is being validated
-     * @param preValidationData Data returned by preValidationHook
-     */
-    function postValidationHook(address account, bytes32 preValidationData) returns (bool success, bytes32 result) external;
-}
-```
 
 ### Sequence diagram for enabling a Signature Validator
 
