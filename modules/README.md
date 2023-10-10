@@ -123,10 +123,10 @@ References:
 - https://github.com/zerodevapp/kernel/blob/main/src/interfaces/IValidator.sol
 
 
-- EIP-712 based Signature Validator
+### Signature validator
 
 ```solidity
-interface ISafeProtocol712SignatureValidator {
+interface ISafeProtocolSignatureValidator {
     /**
      * @param safe The Safe that has delegated the signature verification
      * @param sender The address that originally called the Safe's `isValidSignature` method
@@ -145,13 +145,13 @@ interface ISafeProtocol712SignatureValidator {
         bytes32 domainSeparator,
         bytes32 typeHash,
         bytes calldata encodeData,
-        bytes calldata signature
+        bytes calldata signatures
         bytes calldata additionalData
     ) external view returns (bytes4 magic);
 }
 ```
 
-- Signature Validator Manager
+### Signature validator manager
 
 
 ```solidity
@@ -171,15 +171,15 @@ interface ISafeProtocolSignatureValidatorManager {
      *              Arbitrary data containing the following layout:
      *              Layout of the data:
      *                  0x00 to 0x04: 4 bytes function selector
-     *                  0x04 to 0x36: dataHash
-     *                  0x36 to 0x68: domainSeparator
-     *                  0x68 to 0x9a: typeHash
-     *                  0x9a to 0xcc: encodeData length
-     *                  0xcc to <0xcc + encodeData length>: encodeData
-     *                  <0xcc + encodeData length> to <0xcc + encodeData length> + 0x32 : signature length
-     *                  <0xcc + encodeData length> + 0x32 to <0xcc + encodeData length> + 0x32 + signature length: signature
-     *                  <0xcc + encodeData length> + 0x32 + signature length to <0xcc + encodeData length> + 0x32 + signature length + 0x32 : additional data length
-     *                  <0xcc + encodeData length> + 0x32 + signature length + 0x32 to end: additional data
+     *                  0x04 to 0x24: dataHash
+     *                  0x24 to 0x44: domainSeparator
+     *                  0x44 to 0x64: typeHash
+     *                  0x64 to 0x84: encodeData length
+     *                  0x84 to <0x84 + encodeData length>: encodeData
+     *                  <0x84 + encodeData length> to <0x84 + encodeData length> + 0x20 : signature length
+     *                  <0x84 + encodeData length> + 0x20 to <0x84 + encodeData length> + 0x20 + signature length: signature
+     *                  <0x84 + encodeData length> + 0x20 + signature length to <0x84 + encodeData length> + 0x20 + signature length + 0x20 : additional data length
+     *                  <0x84 + encodeData length> + 0x20 + signature length + 0x20 to end: additional data
      */
     function handle(
         address account,
@@ -190,7 +190,7 @@ interface ISafeProtocolSignatureValidatorManager {
 
     /**
      * @param domain bytes32 containing the domain for which Signature Validator contract should be used
-     * @param signatureValidatorContract Address of the Signature Validator Contract implementing ISafeProtocol712SignatureValidator interface
+     * @param signatureValidatorContract Address of the Signature Validator Contract implementing ISafeProtocolSignatureValidator interface
      */
     function setSignatureValidator(bytes32 domain, address signatureValidatorContract) external;
 
@@ -198,6 +198,38 @@ interface ISafeProtocolSignatureValidatorManager {
      * @param signatureValidatorHooksContract Address of the contract to be used as Hooks for Signature Validator implementing ISignatureValidatorHook interface
      */
     function setSignatureValidatorHooks(address signatureValidatorHooksContract) external;
+}
+```
+
+#### Layout of the `data` parameter
+
+| Start                                                       | End                                                         | Description               |
+|-------------------------------------------------------------|-------------------------------------------------------------|---------------------------|
+| 0x00                                                        | 0x04                                                        | 4 bytes function selector |
+| 0x04                                                        | 0x24                                                        | dataHash                  |
+| 0x24                                                        | 0x44                                                        | domainSeparator           |
+| 0x44                                                        | 0x64                                                        | typeHash                  |
+| 0x64                                                        | 0x84                                                        | encodeData length         |
+| 0x84                                                        | <0x84 + encodeData length>                                  | encodeData                |
+| <0x84 + encodeData length>                                  | <0x84 + encodeData length> + 0x20                           | signature length          |
+| <0x84 + encodeData length> + 0x20                           | <0x84 + encodeData length> + 0x20 + signature length        | signature                 |
+| <0x84 + encodeData length> + 0x20 + signature length        | <0x84 + encodeData length> + 0x20 + signature length + 0x20 | additional data length    |
+| <0x84 + encodeData length> + 0x20 + signature length + 0x20 | end                                                         | additional data           |
+
+### Signature validator hooks
+
+Hooks can be enabled for all validators before and after execution of the validation function. This can be done by adding contract implementing `ISignatureValidatorHook` interface to the `SignatureValidatorManager` by the account.
+The hooks are not specific to a domain and are executed for signature validations.
+
+```solidity
+interface ISignatureValidatorHooks {
+    function preValidationHook(address account, bytes32 domain, bytes payload) returns (bool success, bytes32 result) external;
+
+    /**
+     * @param account Address of the account for which signature is being validated
+     * @param preValidationData Data returned by preValidationHook
+     */
+    function postValidationHook(address account, bytes32 preValidationData) returns (bool success, bytes32 result) external;
 }
 ```
 
@@ -214,25 +246,8 @@ sequenceDiagram
 	Account->>SignatureValidatorManager: Set SignatureValidatorContract for a specific domain.
 		SignatureValidatorManager->>RegistryContract: Check if contract is listed and not flagged
 		RegistryContract-->>SignatureValidatorManager: Return result
-    SignatureValidatorManager->>SignatureValidatorManager: Check if SignatureValidatorContract implements ISafeProtocol712SignatureValidator interface
+    SignatureValidatorManager->>SignatureValidatorManager: Check if SignatureValidatorContract implements ISafeProtocolSignatureValidator interface
     SignatureValidatorManager-->>Account: Ok
-```
-
-### Signature validator hooks
-
-Hooks can be enabled for all validators before and after execution of the validation function. This can be done by adding contract implementing `ISignatureValidatorHook` interface to the `SignatureValidatorManager` by the account.
-The hooks are not specific to a domain and are executed for signature validations.
-
-```solidity
-interface ISignatureValidatorHook {
-    function preValidationHook(address account, bytes32 domain, bytes payload) returns (bool success, bytes32 result) external;
-
-    /**
-     * @param account Address of the account for which signature is being validated
-     * @param preValidationData Data returned by preValidationHook
-     */
-    function postValidationHook(address account, bytes32 preValidationData) returns (bool success, bytes32 result) external;
-}
 ```
 
 ### Sequence diagram for Signature Validation with hooks
