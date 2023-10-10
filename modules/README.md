@@ -173,7 +173,6 @@ interface ISafeProtocolSignatureValidator {
 
 ### Signature validator manager
 
-
 ```solidity
 interface ISafeProtocolSignatureValidatorManager {
 
@@ -241,7 +240,7 @@ sequenceDiagram
 	participant RegistryContract
 
 	Account->>SignatureValidatorManager: Set SignatureValidatorContract for a specific domain.
-		SignatureValidatorManager->>RegistryContract: Check if contract is listed and not flagged
+		SignatureValidatorManager->>RegistryContract: Check if signature validator contract is listed and not flagged
 		RegistryContract-->>SignatureValidatorManager: Return result
     SignatureValidatorManager->>SignatureValidatorManager: Check if SignatureValidatorContract implements ISafeProtocolSignatureValidator interface
     SignatureValidatorManager-->>Account: Ok
