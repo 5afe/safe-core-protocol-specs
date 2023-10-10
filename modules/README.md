@@ -88,7 +88,7 @@ interface ISignatureValidatorHooks {
     /**
      * @param account Address of the account for which signature is being validated
      * @param validator Address of the validator contract to be used for signature validation
-     * @param data Bytes containing domain, typeHash, encodeData length, encodeData, signature length, signature, and additional data length, and additional data
+     * @param data Bytes containing domain, typeHash, encodeData length, encodeData, signature length, signature.
      */
     function preValidationHook(address account, address validator, bytes payload) returns (bytes32 result) external;
 
@@ -232,8 +232,7 @@ interface ISafeProtocolSignatureValidator {
      * @param domainSeparator The EIP-712 domainSeparator
      * @param typeHash The EIP-712 typeHash
      * @param encodeData The EIP-712 encoded data
-     * @param signature An arbitrary payload that can be used to pass additional data to the validator.
-     * @param additionalData An arbitrary payload that can be used to pass additional data to the validator.
+     * @param signature The signature to be verified
      * @return magic The magic value that should be returned if the signature is valid (0x1626ba7e)
      */
     function isValidSignature(
@@ -244,7 +243,6 @@ interface ISafeProtocolSignatureValidator {
         bytes32 typeHash,
         bytes calldata encodeData,
         bytes calldata signatures
-        bytes calldata additionalData
     ) external view returns (bytes4 magic);
 }
 ```
