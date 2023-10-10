@@ -176,6 +176,7 @@ sequenceDiagram
 	ExternalContract->>Account: Check if signature is valid for the account (Call isValidSignature(bytes32,bytes))
     Account->>SignatureValidatorManager: Call isSignatureValid(bytes32,bytes)
     SignatureValidatorManager->>SignatureValidatorManager: Decode data and extract domain, typeHash, encodeData and payload
+    SignatureValidatorManager->>SignatureValidatorManager: Validate the hash
     SignatureValidatorManager->>SignatureValidatorManager: Load Signature Validator for the domain
 	SignatureValidatorManager->>RegistryContract: Check if Signature Validator contract is listed and not flagged
 	RegistryContract-->>SignatureValidatorManager: Return result
@@ -192,6 +193,7 @@ sequenceDiagram
 The above sequence diagram only covers a flow when the signature validator contract and hooks are set, and the transaction executes successfully.
 The possible cases for a transaction to revert are:
 - No Signature validator contract is set for the domain
+- Invalid message hash 
 - Signature validator contract is not listed in registry
 - Signature validator contract is flagged in registry
 - Decoding of data failed
@@ -199,6 +201,22 @@ The possible cases for a transaction to revert are:
 - Call to signature validator contract reverted
 - If signature validator hook is enable, call to `postValidationHook(...)` reverted
 - Transaction ran out of gas
+
+The Layout of the encoded data received by the signature validator is expected to be as follows:
+
+| Start                                                       | End                                                         | Description               |
+|-------------------------------------------------------------|-------------------------------------------------------------|---------------------------|
+| 0x00                                                        | 0x04                                                        | 4 bytes function selector |
+| 0x04                                                        | 0x24                                                        | dataHash                  |
+| 0x24                                                        | 0x44                                                        | domainSeparator           |
+| 0x44                                                        | 0x64                                                        | typeHash                  |
+| 0x64                                                        | 0x84                                                        | encodeData length         |
+| 0x84                                                        | <0x84 + encodeData length>                                  | encodeData                |
+| <0x84 + encodeData length>                                  | <0x84 + encodeData length> + 0x20                           | signature length          |
+| <0x84 + encodeData length> + 0x20                           | <0x84 + encodeData length> + 0x20 + signature length        | signature                 |
+| <0x84 + encodeData length> + 0x20 + signature length        | <0x84 + encodeData length> + 0x20 + signature length + 0x20 | additional data length    |
+| <0x84 + encodeData length> + 0x20 + signature length + 0x20 | end                                                         | additional data           |
+
 
 ### SignatureValidatorManager with SafeProtocolManager
 
@@ -213,7 +231,7 @@ interface ISafeProtocolSignatureValidator {
     /**
      * @param safe The Safe that has delegated the signature verification
      * @param sender The address that originally called the Safe's `isValidSignature` method
-     * @param _hash The EIP-712 hash whose signature will be verified
+     * @param hash The EIP-712 hash whose signature will be verified
      * @param domainSeparator The EIP-712 domainSeparator
      * @param typeHash The EIP-712 typeHash
      * @param encodeData The EIP-712 encoded data
@@ -224,7 +242,7 @@ interface ISafeProtocolSignatureValidator {
     function isValidSignature(
         address account,
         address sender,
-        bytes32 _hash,
+        bytes32 hash,
         bytes32 domainSeparator,
         bytes32 typeHash,
         bytes calldata encodeData,
@@ -248,7 +266,7 @@ interface ISafeProtocolSignatureValidatorManager {
      * @param data Calldata containing the function selector, signature hash, domain separator, type hash, encoded data and payload forwarded by the Manager
      *              Arbitrary data containing the following layout:
      *              Layout of the data:
-     *                  0x00 to 0x04: 4 bytes function selector
+     *                  0x00 to 0x04: 4 bytes function selector i.e. bytes4(keccak256("isValidSignature(bytes32,bytes)") (= 0x1626ba7e)
      *                  0x04 to 0x24: dataHash
      *                  0x24 to 0x44: domainSeparator
      *                  0x44 to 0x64: typeHash
@@ -278,22 +296,6 @@ interface ISafeProtocolSignatureValidatorManager {
     function setSignatureValidatorHooks(address signatureValidatorHooksContract) external;
 }
 ```
-
-#### Layout of the `data` parameter
-
-| Start                                                       | End                                                         | Description               |
-|-------------------------------------------------------------|-------------------------------------------------------------|---------------------------|
-| 0x00                                                        | 0x04                                                        | 4 bytes function selector |
-| 0x04                                                        | 0x24                                                        | dataHash                  |
-| 0x24                                                        | 0x44                                                        | domainSeparator           |
-| 0x44                                                        | 0x64                                                        | typeHash                  |
-| 0x64                                                        | 0x84                                                        | encodeData length         |
-| 0x84                                                        | <0x84 + encodeData length>                                  | encodeData                |
-| <0x84 + encodeData length>                                  | <0x84 + encodeData length> + 0x20                           | signature length          |
-| <0x84 + encodeData length> + 0x20                           | <0x84 + encodeData length> + 0x20 + signature length        | signature                 |
-| <0x84 + encodeData length> + 0x20 + signature length        | <0x84 + encodeData length> + 0x20 + signature length + 0x20 | additional data length    |
-| <0x84 + encodeData length> + 0x20 + signature length + 0x20 | end                                                         | additional data           |
-
 
 Kudos to @mfw78
 
