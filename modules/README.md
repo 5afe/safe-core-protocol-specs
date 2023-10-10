@@ -140,7 +140,8 @@ Kudos to @mfw78
 
 There are continuous efforts to expand the types of signatures supported by the EVM beyond the currently predominant secp256k1 elliptic curve. For example, a signature scheme gaining popularity is based on the secp256r1 elliptic curve (see EIP-7212). Signature Validators allow accounts to support new standards and enable use-cases such as Passkeys-enabled smart accounts, BLS/Schnorr or quantum-secure signatures.
 
-When a contract wants to verify account signature, it should call `isValidSignature(bytes32,bytes)` on the account and the account calls the `SignatureValidatorManager` for validation.
+An account must set `SafeProtocolManager` as a fallback handler and set `SignatureValidatorManager` as function handler for [isValidSignature(bytes32,bytes)](https://eips.ethereum.org/EIPS/eip-1271) function in the manager.
+So, when a contract wants to verify account signature, it should call `isValidSignature(bytes32,bytes)` on the account and the `SafeProtocolManager` will forward the call to the `SignatureValidatorManager` which will call the `SignatureValidatorContract` to check if the signature is valid.
 
 ### Signature validator
 
@@ -262,7 +263,7 @@ sequenceDiagram
 	ExternalContract->>Account: Check if signature is valid for the account (Call isValidSignature(bytes32,bytes))
     Account->>SignatureValidatorManager: Call isSignatureValid(bytes32,bytes)
     SignatureValidatorManager->>SignatureValidatorManager: Decode data and extract domain, typeHash, encodeData and payload
-    SignatureValidatorManager->>SignatureValidatorManager: Check if Signature Validator contract is enabled for the domain
+    SignatureValidatorManager->>SignatureValidatorManager: Load Signature Validator for the domain
 	SignatureValidatorManager->>RegistryContract: Check if Signature Validator contract is listed and not flagged
 	RegistryContract-->>SignatureValidatorManager: Return result
     SignatureValidatorManager->>SignatureValidatorHooks: Execute preValidationHook(...) if enabled
