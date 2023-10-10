@@ -152,12 +152,6 @@ interface ISafeProtocolSignatureValidator {
 
 ```solidity
 interface ISafeProtocolSignatureValidatorManager {
-    /**
-     * @param dataHash Hash of the data that is signed
-
-     * @return bytes4 Value returned by the Signature Validator Contract
-     */
-    function isSignatureValid(bytes32 dataHash, bytes data) return (bytes4 magicValue);
 
     /**
      * @notice A view function that the Manager will call when an account has enabled this contract as a function handler in the Manager for function isSignatureValid(bytes32,bytes)
