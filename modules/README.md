@@ -194,6 +194,7 @@ The possible cases for a transaction to revert are:
 - No Signature validator contract is set for the domain
 - Signature validator contract is not listed in registry
 - Signature validator contract is flagged in registry
+- Decoding of data failed
 - If signature validator hook is enable, call to `preValidationHook(...)` reverted
 - Call to signature validator contract reverted
 - If signature validator hook is enable, call to `postValidationHook(...)` reverted
