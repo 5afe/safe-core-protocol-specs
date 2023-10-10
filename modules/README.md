@@ -219,6 +219,22 @@ The Layout of the encoded data received by the signature validator is expected t
 
 An account can either implement logic to call `SignatureValidatorManager` for validating signature or set `SafeProtocolManager` as a fallback handler and set `SignatureValidatorManager` as function handler for [isValidSignature(bytes32,bytes)](https://eips.ethereum.org/EIPS/eip-1271) function in the manager. So, when a contract wants to verify account signature, it should call `isValidSignature(bytes32,bytes)` on the account and the `SafeProtocolManager` will forward the call to the `SignatureValidatorManager` which will call the `SignatureValidatorContract` to check if the signature is valid.
 
+Below is the sequence diagram for enabling `SignatureValidatorManager` as function handler for an account in `SafeProtocolManager`.
+
+```mermaid
+sequenceDiagram
+	participant Account
+    participant SafeProtocolManager
+	participant RegistryContract
+
+    Account->>SafeProtocolManager: Enable SignatureValidatorManager as a function handler for function selector of `isSignatureValid(bytes32,bytes)` for the account
+    SafeProtocolManager->>RegistryContract: Fetch from registry information about SignatureValidatorManager
+    RegistryContract-->>SafeProtocolManager: Return result
+    SafeProtocolManager->>SafeProtocolManager: Check if SignatureValidatorManager is listed and not flagged
+    SafeProtocolManager->>SafeProtocolManager: Check if SignatureValidatorManager implements ISafeProtocolFunctionHandler interface
+    SafeProtocolManager-->>Account: Return result
+```
+
 ### Signature validator interface
 
 A signature validator must implement the following interface.
