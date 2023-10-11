@@ -118,7 +118,7 @@ Kudos to @mfw78
 ## Signature validators
 
 There are continuous efforts to expand the types of signatures supported by the EVM beyond the currently predominant secp256k1 elliptic curve. For example, a signature scheme gaining popularity is based on the secp256r1 elliptic curve (see EIP-7212). Signature Validators allow accounts to support new standards and enable use-cases such as Passkeys-enabled smart accounts, BLS/Schnorr or quantum-secure signatures.
-Inspired from [EIP-712](https://eips.ethereum.org/EIPS/eip-712) which specifies standard for typed structured data hashing and signing, a signature validator is expected to validate a signed message for a specific domain. To do so, a signature validator manager contract acts as a storage for maintaining enabled validators (approved by the registry) per domain per account.
+Inspired from [EIP-712](https://eips.ethereum.org/EIPS/eip-712) which specifies standard for typed structured data hashing and signing, a signature validator is expected to validate a signed message for a specific domain. To do so, a `SignatureValidatorManager` contract acts as storage for maintaining enabled validators (approved by the registry) per domain per account.
 
 First, a signature validator must be enabled by the account for a specific domain which is outlined by the below sequence diagram.
 
@@ -180,6 +180,35 @@ The possible cases for a transaction to revert are:
 - Call to signature validator contract reverted
 - If signature validator hook is enable, call to `postValidationHook(...)` reverted
 - Transaction ran out of gas
+
+The information required to route the signature validation to the correct validator has to be passed to the manager. As the validation flow is based on ERC-1271, it is necessary to encode this information into the parameters of this standard. ERC-1271 defines an interface to verify signatures based on contract logic. For this, `isValidSignature(bytes32,bytes)` function has to be called where the first parameter i.e., `bytes32` is the hash of the message that was signed, and the second parameter i.e., `bytes` are the signatures (which are arbitrary bytes).
+
+It is important to understand the signing and verification flow related to ERC-1271. Any dapp can make use of `eth_sign` or `eth_signTypedData` to retrieve a signature from a connected wallet. To verify this signature for an EOA the dapp will calculate the hash of the message (either ERC-191 or ERC-712 based) and recover the signer address from the signature using the ECDSA based recovery. For smart contracts the flow is similar, but instead of using the ECDSA based recovery method to validate the signer, the dapp calls `isValidSignature` on the smart contract with the hash and the signature.
+
+This allows us to add additional logic when validating signatures, such as differentiating the validation logic based on the message. The challenge is that it is impossible to retrieve the message that was signed from the hash. To work around it we can encode the message into the signature and then when the smart contract is called this message is extracted, hashed and validated against the hash. This is outlined in the following example code:
+
+```solidity
+function isValidSignature(bytes32 hash, bytes memory payload) external view returns (bytes4) {
+  (bytes memory signature, bytes memory message) = abi.decode(payload, (bytes,bytes));
+  require(hash == keccak256(message), "Unexpected message/hash combination");
+  // more validation logic
+}
+```
+
+Using this approach it is also possible to encode ERC-712 based messages in the signature (for signatures requested via `eth_signTypedData`). With this we can route the signature validation based on the domain of the ERC-712 message. The payload contain the signature, the domainHash and the messageHash. Only minor adjustments are required to the previous code:
+
+```solidity
+mapping(bytes32 => ISignatureValidator) validatorForDomain;
+function isValidSignature(bytes32 hash, bytes memory payload) external view returns (bytes4) {
+  (bytes32 domainHash, bytes32 messageHash, bytes memory signature) = abi.decode(payload, (bytes32,bytes32,bytes));
+  require(hash, keccak256(0x19, 0x01, domainHash, messageHash), "Could not validate data");
+  ISignatureValidator validator = validatorForDomain[domainHash];
+  return validator.isValidSignature(msg.sender /* account */, _msgSender(), domainHash, messageHash, signature);
+}
+```
+
+To distinguish signatures that follow this format from "default" signatures the signature is prepended with a special bytes4 identifier. When the dapp requests the signature the wallet can then create the signature in the required format for the correct signature routing. 
+
 
 The Layout of the encoded data received by the signature validator is expected to be as follows:
 
@@ -251,15 +280,20 @@ interface ISignatureValidatorHooks {
     /**
      * @param account Address of the account for which signature is being validated
      * @param validator Address of the validator contract to be used for signature validation
-     * @param data Bytes containing domain, typeHash, encodeData length, encodeData, signature length, signature.
+     * @param domain bytes32 containing the domain separator
+     * @param typeHash bytes32 containing the type hash of the data
+     * @param encodeData The encoded data of the signature validator
+     * @param signature The signature provided for the validation
+     * @return result bytes containing the result
      */
-    function preValidationHook(address account, address validator, bytes payload) returns (bytes32 result) external;
+    function preValidationHook(address account, address validator, bytes32 domain, bytes32 typeHash, bytes calldata encodeData, bytes calldata signature) external returns (bytes memory result);
 
     /**
      * @param account Address of the account for which signature is being validated
      * @param preValidationData Data returned by preValidationHook
+     * @return result bytes containing the result
      */
-    function postValidationHook(address account, bytes32 preValidationData) returns (bytes32 result) external;
+    function postValidationHook(address account, bytes calldata preValidationData) external returns (bytes memory result);
 }
 ```
 
