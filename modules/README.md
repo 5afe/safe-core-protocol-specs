@@ -118,9 +118,9 @@ Kudos to @mfw78
 ## Signature validators
 
 There are continuous efforts to expand the types of signatures supported by the EVM beyond the currently predominant secp256k1 elliptic curve. For example, a signature scheme gaining popularity is based on the secp256r1 elliptic curve (see EIP-7212). Signature Validators allow accounts to support new standards and enable use-cases such as Passkeys-enabled smart accounts, BLS/Schnorr or quantum-secure signatures.
-Inspired from [EIP-712](https://eips.ethereum.org/EIPS/eip-712) which specifies standard for typed structured data hashing and signing, a signature validator is expected to validate a signed message for a specific domain. To do so, a `SignatureValidatorManager` contract acts as storage for maintaining enabled validators (approved by the registry) per domain per account.
+Inspired from [EIP-712](https://eips.ethereum.org/EIPS/eip-712) which specifies standard for typed structured data hashing and signing, a signature validator is expected to validate a signed message for a specific domain. To do so, a `SignatureValidatorManager` contract acts as storage for maintaining enabled validators (approved by the registry) per domain per account or a default signature validator.
 
-First, a signature validator must be enabled by the account for a specific domain which is outlined by the below sequence diagram.
+First, a signature validator must be enabled by the account which is outlined by the below sequence diagram.
 
 ```mermaid
 sequenceDiagram
@@ -128,7 +128,7 @@ sequenceDiagram
 	participant SignatureValidatorManager
 	participant RegistryContract
 
-	Account->>SignatureValidatorManager: Set SignatureValidatorContract for a specific domain.
+	Account->>SignatureValidatorManager: Set SignatureValidatorContract for a specific domain or default validator.
 		SignatureValidatorManager->>RegistryContract: Check if signature validator contract is listed and not flagged
 		RegistryContract-->>SignatureValidatorManager: Return result
     SignatureValidatorManager->>SignatureValidatorManager: Check if SignatureValidatorContract implements ISafeProtocolSignatureValidator interface
@@ -141,7 +141,7 @@ The possible cases for a transaction to revert are:
 - Signature validator contract is flagged in registry
 - Transaction ran out of gas
 
-After a enabling a signature validator, external entities can request validating account signatures. The diagram below illustrates the sequence of calls that are made when a signature is to be validated. The `Account` sets the `SignatureValidatorContract` for a specific domain via the `SignatureValidatorManager`. When a signature for an account is to be validated by an external entity, here referred as `ExternalContract`, the `ExternalContract` contract calls the `isValidSignature(bytes32,bytes)` function supported by the account. Account further calls `SignatureValidatorManager`. If the signature validator contract is set for the account, listed and not flagged, the `SignatureValidatorManager` calls the `SignatureValidatorContract` to check if the signature is valid. Additionally, hooks for signature validators help to provide a way to add additional checks before and after the calling a signature validation function.
+After a enabling a signature validator, external entities can request validating account signatures. The diagram below illustrates the sequence of calls that are made when a signature is to be validated. The `Account` sets the `SignatureValidatorContract` for a specific domain or a default signature validator via the `SignatureValidatorManager`. When a signature for an account is to be validated by an external entity, here referred as `ExternalContract`, the `ExternalContract` contract calls the `isValidSignature(bytes32,bytes)` function supported by the account. Account further calls `SignatureValidatorManager`. If the signature validator contract is set for the account, listed and not flagged, the `SignatureValidatorManager` calls the `SignatureValidatorContract` to check if the signature is valid. Additionally, hooks for signature validators help to provide a way to add additional checks before and after the calling a signature validation function.
 
 ```mermaid
 sequenceDiagram
