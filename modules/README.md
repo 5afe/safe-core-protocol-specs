@@ -214,14 +214,12 @@ The Layout of the encoded data received by the signature validator is expected t
 
 | Start                                                       | End                                                         | Description               |
 |-------------------------------------------------------------|-------------------------------------------------------------|---------------------------|
-| 0x00                                                        | 0x04                                                        | 4 bytes function selector |
-| 0x04                                                        | 0x24                                                        | messageHash                  |
-| 0x24                                                        | 0x44                                                        | domainSeparator           |
-| 0x44                                                        | 0x64                                                        | typeHash                  |
-| 0x64                                                        | 0x84                                                        | encodeData length         |
-| 0x84                                                        | <0x84 + encodeData length>                                  | encodeData                |
-| <0x84 + encodeData length>                                  | <0x84 + encodeData length> + 0x20                           | signature length          |
-| <0x84 + encodeData length> + 0x20                           | <0x84 + encodeData length> + 0x20 + signature length        | signature                 |
+| 0x00                                                        | 0x20                                                        | domainSeparator           |
+| 0x20                                                        | 0x40                                                        | typeHash                  |
+| 0x40                                                        | 0x60                                                        | encodeData length         |
+| 0x60                                                        | <0x60 + encodeData length>                                  | encodeData                |
+| <0x60 + encodeData length>                                  | <0x60 + encodeData length> + 0x20                           | signature length          |
+| <0x60 + encodeData length> + 0x20                           | <0x60 + encodeData length> + 0x20 + signature length        | signature                 |
 
 ### SignatureValidatorManager with SafeProtocolManager
 
