@@ -61,7 +61,7 @@ Inspired from [EIP-6617](https://eips.ethereum.org/EIPS/eip-6617), must `require
 
 ## Hooks
 
-### Transaction execution from module hooks
+### Hooks for transaction execution
 
 Hooks add additional logic at certain points of the transaction lifecycle. Hooks enable various forms of security protections such as allow- and deny-lists, MEV-protections, risk-assessments, and more. The Safe{Core} Protocol currently recognizes the following types of hooks:
 - `preCheck` / `preCheckRootAccess` verify custom conditions using the state before a transaction is executed
@@ -79,35 +79,14 @@ interface ISafeProtocolHooks {
 }
 ```
 
-### Signature validator hooks
-
-Signature validation is a critical part of smart contract accounts. A flawed implementation of validation logic can lead to approving a transaction with an invalid signature. Signature validator hooks can be used to add safety net to the signature validation process and hold the power to block a signature validator from approving unauthorized actions. Hooks can be enabled for all validators before and after execution of the validation function. This can be done by adding contract implementing `ISignatureValidatorHook` interface to the `SignatureValidatorManager` by the account. The hooks are not specific to a domain and are executed for all signature validations. The hooks function(s) should revert on failed checks.
-
-```solidity
-interface ISignatureValidatorHooks {
-    /**
-     * @param account Address of the account for which signature is being validated
-     * @param validator Address of the validator contract to be used for signature validation
-     * @param data Bytes containing domain, typeHash, encodeData length, encodeData, signature length, signature.
-     */
-    function preValidationHook(address account, address validator, bytes payload) returns (bytes32 result) external;
-
-    /**
-     * @param account Address of the account for which signature is being validated
-     * @param preValidationData Data returned by preValidationHook
-     */
-    function postValidationHook(address account, bytes32 preValidationData) returns (bytes32 result) external;
-}
-```
-
-### Parameter `executionMeta` value
+#### Parameter `executionMeta` value
 
 | Execution Type                                                                                                                                                                                 | Value                                                                                                                                                                                        |
 |------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Multisignature Flow (for accounts that use [Guard interface](https://github.com/safe-global/safe-contracts/blob/8ffae95faa815acf86ec8b50021ebe9f96abde10/contracts/base/GuardManager.sol#L10)) | Encoded data created from parameter values received from `checkTransaction(...)` i.e. `abi.encode(to, value, data, gas, baseGas, gasPrice, gasToken, refundReceiver, signatures, msgSender)` |
 | Plugin Flow                                                                                                                                                                                    | Encoded address of the Plugin i.e. `abi.encode(pluginAddress)`                                                                                                                               |
 
-### Parameter `executionType` value
+#### Parameter `executionType` value
 
 | Execution Type      | Value |
 |---------------------|-------|
@@ -260,6 +239,27 @@ interface ISafeProtocolSignatureValidator {
         bytes calldata encodeData,
         bytes calldata signatures
     ) external view returns (bytes4 magic);
+}
+```
+
+### Hooks for signature validator
+
+Signature validation is a critical part of smart contract accounts. A flawed implementation of validation logic can lead to approving a transaction with an invalid signature. Signature validator hooks can be used to add safety net to the signature validation process and hold the power to block a signature validator from approving unauthorized actions. Hooks can be enabled for all validators before and after execution of the validation function. This can be done by adding contract implementing `ISignatureValidatorHook` interface to the `SignatureValidatorManager` by the account. The hooks are not specific to a domain and are executed for all signature validations. The hooks function(s) should revert on failed checks.
+
+```solidity
+interface ISignatureValidatorHooks {
+    /**
+     * @param account Address of the account for which signature is being validated
+     * @param validator Address of the validator contract to be used for signature validation
+     * @param data Bytes containing domain, typeHash, encodeData length, encodeData, signature length, signature.
+     */
+    function preValidationHook(address account, address validator, bytes payload) returns (bytes32 result) external;
+
+    /**
+     * @param account Address of the account for which signature is being validated
+     * @param preValidationData Data returned by preValidationHook
+     */
+    function postValidationHook(address account, bytes32 preValidationData) returns (bytes32 result) external;
 }
 ```
 
