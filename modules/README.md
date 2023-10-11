@@ -151,19 +151,32 @@ sequenceDiagram
 	participant RegistryContract
 	participant SignatureValidatorContract
     participant SignatureValidatorHooks
+    participant DefaultSignatureValidator
 
 	ExternalContract->>Account: Check if signature is valid for the account (Call isValidSignature(bytes32,bytes))
     Account->>SignatureValidatorManager: Call isSignatureValid(bytes32,bytes)
-    SignatureValidatorManager->>SignatureValidatorManager: Decode data and extract domain, typeHash, encodeData and payload
-    SignatureValidatorManager->>SignatureValidatorManager: Validate the hash
-    SignatureValidatorManager->>SignatureValidatorManager: Load Signature Validator for the domain
-	SignatureValidatorManager->>RegistryContract: Check if Signature Validator contract is listed and not flagged
-	RegistryContract-->>SignatureValidatorManager: Return result
-    SignatureValidatorManager->>SignatureValidatorHooks: Execute preValidationHook(...) if enabled
-    SignatureValidatorHooks-->>SignatureValidatorManager: Return result
+    SignatureValidatorManager->>SignatureValidatorManager: Decode data and extract 4 bytes selector
+    alt selector indicating to use domain specific validator
+        SignatureValidatorManager->>SignatureValidatorManager: Decode data and extract domain, typeHash, encodeData and payload
+        SignatureValidatorManager->>SignatureValidatorManager: Validate the hash and load Signature Validator for the domain
+        SignatureValidatorManager->>RegistryContract: Check if Signature Validator contract is listed and not flagged
+        RegistryContract-->>SignatureValidatorManager: Return result
+        SignatureValidatorManager->>SignatureValidatorHooks: Execute preValidationHook(...) if enabled
+        SignatureValidatorHooks-->>SignatureValidatorManager: Return result
 
-	SignatureValidatorManager->>SignatureValidatorContract: Check for signature validity (call isValidSignature(...))
-	SignatureValidatorContract-->>SignatureValidatorManager: Return signature validation result
+        SignatureValidatorManager->>SignatureValidatorContract: Check for signature validity (call isValidSignature(...))
+        SignatureValidatorContract-->>SignatureValidatorManager: Return signature validation result
+
+    else use default validation flow
+        SignatureValidatorManager->>SignatureValidatorManager: Decode data and extract signatures
+        SignatureValidatorManager->>SignatureValidatorManager: Load DefaultSignatureValidator
+        SignatureValidatorManager->>RegistryContract: Check if Signature Validator contract is listed and not flagged
+        RegistryContract-->>SignatureValidatorManager: Return result
+        SignatureValidatorManager->>SignatureValidatorHooks: Execute preValidationHook(...) if enabled
+        SignatureValidatorManager->>DefaultSignatureValidator: Check if given signature is valid. (DefaultSignatureValidator should not call account's isValidSignature(...) function)
+        DefaultSignatureValidator-->>SignatureValidatorManager: Ok
+        SignatureValidatorManager->>SignatureValidatorHooks: Execute preValidationHook(...) if enabled
+    end
     SignatureValidatorManager->>SignatureValidatorHooks: Execute postValidationHook(...) if enabled
 	SignatureValidatorManager-->>ExternalContract: Return signature validation result
     Account-->>ExternalContract: Return signature validation result
@@ -207,19 +220,20 @@ function isValidSignature(bytes32 hash, bytes memory payload) external view retu
 }
 ```
 
-To distinguish signatures that follow this format from "default" signatures the signature is prepended with a special bytes4 identifier. When the dapp requests the signature the wallet can then create the signature in the required format for the correct signature routing. 
+To distinguish signatures that follow this format from "default" signatures the signature is prepended with a special bytes4 identifier. When the dapp requests the signature the wallet can then create the signature in the required format for the correct signature routing.
 
 
 The Layout of the encoded data received by the signature validator is expected to be as follows:
 
 | Start                                                       | End                                                         | Description               |
 |-------------------------------------------------------------|-------------------------------------------------------------|---------------------------|
-| 0x00                                                        | 0x20                                                        | domainSeparator           |
-| 0x20                                                        | 0x40                                                        | typeHash                  |
-| 0x40                                                        | 0x60                                                        | encodeData length         |
-| 0x60                                                        | <0x60 + encodeData length>                                  | encodeData                |
-| <0x60 + encodeData length>                                  | <0x60 + encodeData length> + 0x20                           | signature length          |
-| <0x60 + encodeData length> + 0x20                           | <0x60 + encodeData length> + 0x20 + signature length        | signature                 |
+    | 0x00                                                        | 0x04                                                        | 4 bytes selector |
+| 0x04                                                        | 0x24                                                        | domainSeparator           |
+| 0x24                                                        | 0x44                                                        | typeHash                  |
+| 0x44                                                        | 0x64                                                        | encodeData length         |
+| 0x64                                                        | <0x64 + encodeData length>                                  | encodeData                |
+| <0x64 + encodeData length>                                  | <0x64 + encodeData length> + 0x20                           | signature length          |
+| <0x64 + encodeData length> + 0x20                           | <0x64 + encodeData length> + 0x20 + signature length        | signature                 |
 
 ### SignatureValidatorManager with SafeProtocolManager
 
@@ -278,13 +292,10 @@ interface ISignatureValidatorHooks {
     /**
      * @param account Address of the account for which signature is being validated
      * @param validator Address of the validator contract to be used for signature validation
-     * @param domain bytes32 containing the domain separator
-     * @param typeHash bytes32 containing the type hash of the data
-     * @param encodeData The encoded data of the signature validator
-     * @param signature The signature provided for the validation
+     * @param payload The payload provided for the validation
      * @return result bytes containing the result
      */
-    function preValidationHook(address account, address validator, bytes32 domain, bytes32 typeHash, bytes calldata encodeData, bytes calldata signature) external returns (bytes memory result);
+    function preValidationHook(address account, address validator, bytes calldata payload) external returns (bytes memory result);
 
     /**
      * @param account Address of the account for which signature is being validated
@@ -311,12 +322,13 @@ interface ISafeProtocolSignatureValidatorManager {
      *              Layout of the data:
      *                  0x00 to 0x04: 4 bytes function selector i.e. bytes4(keccak256("isValidSignature(bytes32,bytes)") (= 0x1626ba7e)
      *                  0x04 to 0x24: dataHash
-     *                  0x24 to 0x44: domainSeparator
-     *                  0x44 to 0x64: typeHash
-     *                  0x64 to 0x84: encodeData length
-     *                  0x84 to <0x84 + encodeData length>: encodeData
-     *                  <0x84 + encodeData length> to <0x84 + encodeData length> + 0x20 : signature length
-     *                  <0x84 + encodeData length> + 0x20 to <0x84 + encodeData length> + 0x20 + signature length: signature
+     *                  0x24 to 0x28: 4 bytes selector
+     *                  0x28 to 0x48: domainSeparator
+     *                  0x48 to 0x68: typeHash
+     *                  0x68 to 0x88: encodeData length
+     *                  0x88 to <0x88 + encodeData length>: encodeData
+     *                  <0x88 + encodeData length> to <0x88 + encodeData length> + 0x20 : signature length
+     *                  <0x88 + encodeData length> + 0x20 to <0x88 + encodeData length> + 0x20 + signature length: signature
      */
     function handle(
         address account,
@@ -330,6 +342,12 @@ interface ISafeProtocolSignatureValidatorManager {
      * @param signatureValidatorContract Address of the Signature Validator Contract implementing ISafeProtocolSignatureValidator interface
      */
     function setSignatureValidator(bytes32 domain, address signatureValidatorContract) external;
+
+    /**
+     * @param domain bytes32 containing the domain for which Signature Validator contract should be used
+     * @param signatureValidatorContract Address of the Signature Validator Contract implementing ISafeProtocolSignatureValidator interface
+     */
+    function setDefaultSignatureValidator(address signatureValidatorContract) external;
 
     /**
      * @param signatureValidatorHooksContract Address of the contract to be used as Hooks for Signature Validator implementing ISignatureValidatorHook interface
