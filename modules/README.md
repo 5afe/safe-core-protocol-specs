@@ -215,7 +215,7 @@ The Layout of the encoded data received by the signature validator is expected t
 | Start                                                       | End                                                         | Description               |
 |-------------------------------------------------------------|-------------------------------------------------------------|---------------------------|
 | 0x00                                                        | 0x04                                                        | 4 bytes function selector |
-| 0x04                                                        | 0x24                                                        | dataHash                  |
+| 0x04                                                        | 0x24                                                        | messageHash                  |
 | 0x24                                                        | 0x44                                                        | domainSeparator           |
 | 0x44                                                        | 0x64                                                        | typeHash                  |
 | 0x64                                                        | 0x84                                                        | encodeData length         |
