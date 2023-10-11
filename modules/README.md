@@ -252,7 +252,7 @@ interface ISafeProtocolSignatureValidator {
     /**
      * @param safe The Safe that has delegated the signature verification
      * @param sender The address that originally called the Safe's `isValidSignature` method
-     * @param hash The EIP-712 hash whose signature will be verified
+     * @param messageHash The EIP-712 hash whose signature will be verified
      * @param domainSeparator The EIP-712 domainSeparator
      * @param typeHash The EIP-712 typeHash
      * @param encodeData The EIP-712 encoded data
@@ -262,7 +262,7 @@ interface ISafeProtocolSignatureValidator {
     function isValidSignature(
         address account,
         address sender,
-        bytes32 hash,
+        bytes32 messageHash,
         bytes32 domainSeparator,
         bytes32 typeHash,
         bytes calldata encodeData,
