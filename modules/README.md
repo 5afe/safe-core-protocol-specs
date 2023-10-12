@@ -342,6 +342,11 @@ interface ISafeProtocolSignatureValidatorManager {
 }
 ```
 
+### Security considerations
+
+A malicious actor can change the routing of signature validation flow by changing the 4 bytes of signature selector.
+Under such cases the signature validation should fail and revert the transaction. To prove that signature validation fails due to changed routing, formal verification can be used. This would be tackled in future.
+
 Kudos to @mfw78
 
 References:
