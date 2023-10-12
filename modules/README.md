@@ -165,7 +165,7 @@ sequenceDiagram
     SafeProtocolManager->>SignatureValidatorManager: Call handle(...) function
     SignatureValidatorManager->>SignatureValidatorManager: Decode data and extract 4 bytes signature selector
     alt selector indicating to use domain specific validator
-        SignatureValidatorManager->>SignatureValidatorManager: Decode data and extract domain, messageHash and signatures
+        SignatureValidatorManager->>SignatureValidatorManager: Decode data and extract domain, hashStruct and signatures
         SignatureValidatorManager->>SignatureValidatorManager: Validate the hash and load Signature Validator for the domain
         SignatureValidatorManager->>RegistryContract: Check if Signature Validator contract is listed and not flagged
         RegistryContract-->>SignatureValidatorManager: Return result
@@ -213,26 +213,25 @@ function isValidSignature(bytes32 hash, bytes memory payload) external view retu
 }
 ```
 
-Using this approach it is also possible to encode ERC-712 based messages in the signature (for signatures requested via `eth_signTypedData`). With this we can route the signature validation based on the domain of the ERC-712 message. The payload contain the signature, the domainHash and the messageHash. Only minor adjustments are required to the previous code:
+Using this approach it is also possible to encode ERC-712 based messages in the signature (for signatures requested via `eth_signTypedData`). With this we can route the signature validation based on the domain of the ERC-712 message. The payload contain the signature, the domainHash and the hashStruct. Only minor adjustments are required to the previous code:
 
 ```solidity
 mapping(bytes32 => ISignatureValidator) validatorForDomain;
 function isValidSignature(bytes32 hash, bytes memory payload) external view returns (bytes4) {
-  (bytes32 domainHash, bytes32 messageHash, bytes memory signature) = abi.decode(payload, (bytes32,bytes32,bytes));
-  require(hash, keccak256(0x19, 0x01, domainHash, messageHash), "Could not validate data");
+  (bytes32 domainHash, bytes32 hashStruct, bytes memory signature) = abi.decode(payload, (bytes32,bytes32,bytes));
+  require(hash, keccak256(0x19, 0x01, domainHash, hashStruct), "Could not validate data");
   ISignatureValidator validator = validatorForDomain[domainHash];
-  return validator.isValidSignature(msg.sender /* account */, _msgSender(), domainHash, messageHash, signature);
+  return validator.isValidSignature(msg.sender /* account */, _msgSender(), domainHash, hashStruct, signature);
 }
 ```
 
 To distinguish signatures that follow this format from "default" signatures the signature is prepended with a special bytes4 identifier. When the dapp requests the signature the wallet can then create the signature in the required format for the correct signature routing.
 
-
-The encoded data to be received by the signature validator manager is expected to be encoded as follows:
+The encoded data to be received by the signature validator manager as `bytes` parameter of `isValidSignature(bytes32,bytes)` is expected to be encoded as follows:
 
 ```solidity
-function encodeData(bytes4 selector, bytes32 domain, bytes32 messageHash, bytes calldata signatures) public pure returns (bytes memory) {
-        bytes memory data = abi.encode(domain, messageHash, signatures);
+function encodeData(bytes4 selector, bytes32 domain, bytes32 hashStruct, bytes calldata signatures) public pure returns (bytes memory) {
+        bytes memory data = abi.encode(domain, hashStruct, signatures);
         return abi.encodePacked(selector, data);
 }
 ```
@@ -266,17 +265,19 @@ interface ISafeProtocolSignatureValidator {
     /**
      * @param safe The Safe that has delegated the signature verification
      * @param sender The address that originally called the Safe's `isValidSignature` method
-     * @param structHash The EIP-712 hash whose signature will be verified
+     * @param messageHash The EIP-712 hash whose signature will be verified
      * @param domainSeparator The EIP-712 domainSeparator
-     * @param messageHash Hash of the message
+     * @param hashStruct Hash of the message
      * @param signature The signature to be verified
      * @return magic The magic value that should be returned if the signature is valid (0x1626ba7e)
      */
     function isValidSignature(
         address account,
         address sender,
+        bytes32 messageHash,
         bytes32 domainSeparator,
         bytes32 messageHash,
+        bytes32 hashStruct
         bytes calldata signatures
     ) external view returns (bytes4 magic);
 }
