@@ -311,17 +311,10 @@ interface ISafeProtocolSignatureValidatorManager {
      * @notice A view function that the Manager will call when an account has enabled this contract as a function handler in the Manager for function isSignatureValid(bytes32,bytes)
      * @param account Address of the account whose signature validator is to be used
      * @param sender Address requesting signature validation
-     * @param data Calldata containing the function selector, hash of signed data, domain separator, type hash, encoded data and payload forwarded by the Manager
-     *              Arbitrary data containing the following layout in case of EIP-712 typed data is signed:
-     *              Layout of the data:
-     *                  0x00 to 0x04: 4 bytes function selector i.e. bytes4(keccak256("isValidSignature(bytes32,bytes)") (= 0x1626ba7e)
-     *                  0x04 to 0x24: 32 bytes hash of signed data
-     *                  0x24 to end: encoded data containing the following:
-     *                      - 4 bytes of selector
-     *                      - 32 bytes of domainSeparator
-     *                      - 32 bytes of typeHash
-     *                      - arbitrary length bytes of containing encodeData
-     *                      - arbitrary length bytes of containing signatures
+     * @param data Calldata containing the 4 bytes function selector, 4 bytes signature selector, and one of the below:
+     *              encoded bytes containing bytes32 domain separator, bytes32 messageHash and bytes32 signatures
+     *              OR
+     *              encoded bytes containing bytes32 messageHash and bytes signatures
      */
     function handle(
         address account,
