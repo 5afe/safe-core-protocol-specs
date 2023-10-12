@@ -121,7 +121,9 @@ Kudos to @mfw78
 There are continuous efforts to expand the types of signatures supported by the EVM beyond the currently predominant secp256k1 elliptic curve. For example, a signature scheme gaining popularity is based on the secp256r1 elliptic curve (see EIP-7212). Signature Validators allow accounts to support new standards and enable use-cases such as Passkeys-enabled smart accounts, BLS/Schnorr or quantum-secure signatures.
 Inspired from [EIP-712](https://eips.ethereum.org/EIPS/eip-712) which specifies standard for typed structured data hashing and signing, a signature validator is expected to validate a signed message for a specific domain. To do so, a `SignatureValidatorManager` contract acts as storage for maintaining enabled validators (approved by the registry) per domain per account or use a default signature validation scheme.
 
-Apart from validating EIP-712 typed signed message an account might also require to support other arbitrary signed messages for interaction with projects following other message hashing and signing formats. Signatures validator covers this requirement by using a default signature validation scheme which is discussed further.
+Apart from validating EIP-712 typed signed message an account might also require to support other arbitrary signed messages for interaction with projects following other message hashing and signing formats. Signature validator covers this requirement by using a default signature validation scheme which is discussed further.
+
+### Enabling Signature Validator
 
 For enabling a domain specific EIP-712 signature validator, first a signature validator must be enabled by the account which is outlined by the below sequence diagram.
 
@@ -132,7 +134,7 @@ sequenceDiagram
 	participant RegistryContract
 
 	Account->>SignatureValidatorManager: Set SignatureValidatorContract for a specific domain.
-		SignatureValidatorManager->>RegistryContract: Check if signature validator contract is listed and not flagged
+		SignatureValidatorManager->>RegistryContract: Check if SignatureValidatorContract is listed and not flagged
 		RegistryContract-->>SignatureValidatorManager: Return result
     SignatureValidatorManager->>SignatureValidatorManager: Check if SignatureValidatorContract implements ISafeProtocolSignatureValidator interface
     SignatureValidatorManager-->>Account: Ok
@@ -144,20 +146,24 @@ The possible cases for a transaction to revert are:
 - Signature validator contract is flagged in registry
 - Transaction ran out of gas
 
-After a enabling a signature validator, external entities can request validating account signatures. The diagram below illustrates the sequence of calls that are made when a signature is to be validated. The `Account` sets the `SignatureValidatorContract` for a specific domain via the `SignatureValidatorManager`. When a signature for an account is to be validated by an external entity, here referred as `ExternalContract`, the `ExternalContract` contract calls the `isValidSignature(bytes32,bytes)` function supported by the account. Account further calls `SignatureValidatorManager`. `SignatureValidatorManager` decides to use default validation scheme or domain specific validator based on the contents of the received data. If domain specific signature validator is to be used and the signature validator contract is set for the account, listed and not flagged, the `SignatureValidatorManager` calls the `SignatureValidatorContract` to check if the signature is valid. Additionally, hooks for signature validators help to provide a way to add additional checks before and after the calling a signature validation function.
+### Validating account signature
+
+After a enabling a signature validator and setting `SignatureValidatorManager` as function handler in `SafeProtocolManager`, external entities can request validating account signatures. The diagram below illustrates the sequence of calls that are made when an account signature is to be validated. When a signature for an account is to be validated by an external entity, here referred as `ExternalContract`, the `ExternalContract` contract calls the `isValidSignature(bytes32,bytes)` function supported by the account. Account further calls `SignatureValidatorManager`. `SignatureValidatorManager` decides to use default validation scheme or domain specific validator based on the contents of the received data. If domain specific signature validator is to be used and the signature validator contract is set for the account, listed and not flagged, the `SignatureValidatorManager` calls the `SignatureValidatorContract` to check if the signature is valid. Additionally, hooks for signature validators help to provide a way to add additional checks before and after the calling a signature validation function.
 
 ```mermaid
 sequenceDiagram
-	participant Account
 	participant ExternalContract
+	participant Account
+    participant SafeProtocolManager
 	participant SignatureValidatorManager
 	participant RegistryContract
 	participant SignatureValidatorContract
     participant SignatureValidatorHooks
 
 	ExternalContract->>Account: Check if signature is valid for the account (Call isValidSignature(bytes32,bytes))
-    Account->>SignatureValidatorManager: Call isSignatureValid(bytes32,bytes)
-    SignatureValidatorManager->>SignatureValidatorManager: Decode data and extract 4 bytes selector
+    Account->>SafeProtocolManager: SafeProtocolManager enabled as fallback handler for account
+    SafeProtocolManager->>SignatureValidatorManager: Call handle(...) function
+    SignatureValidatorManager->>SignatureValidatorManager: Decode data and extract 4 bytes signature selector
     alt selector indicating to use domain specific validator
         SignatureValidatorManager->>SignatureValidatorManager: Decode data and extract domain, messageHash and signatures
         SignatureValidatorManager->>SignatureValidatorManager: Validate the hash and load Signature Validator for the domain
@@ -170,7 +176,7 @@ sequenceDiagram
         SignatureValidatorContract-->>SignatureValidatorManager: Return signature validation result
 
     else use default validation flow
-        SignatureValidatorManager->>SignatureValidatorManager: Decode data and extract signatures
+        SignatureValidatorManager->>SignatureValidatorManager: Decode data and extract hash and signatures
         SignatureValidatorManager->>SignatureValidatorHooks: Execute preValidationHook(...) if enabled
         SignatureValidatorManager->>Account: Check if given signature is valid. (call should be other than account's isValidSignature(...) function)
         Account-->>SignatureValidatorManager: Ok
@@ -187,10 +193,10 @@ The possible cases for a transaction to revert are:
 - Signature validator contract is not listed in registry
 - Signature validator contract is flagged in registry
 - Decoding of data failed
-- If signature validator hook is enable, call to `preValidationHook(...)` reverted
+- If signature validator hook is enabled, call to `preValidationHook(...)` reverted
 - Call to signature validator contract reverted
 - Default signature validation failed
-- If signature validator hook is enable, call to `postValidationHook(...)` reverted
+- If signature validator hook is enabled, call to `postValidationHook(...)` reverted
 - Transaction ran out of gas
 
 The information required to route the signature validation to the correct validator has to be passed to the manager. As the validation flow is based on ERC-1271, it is necessary to encode this information into the parameters of this standard. ERC-1271 defines an interface to verify signatures based on contract logic. For this, `isValidSignature(bytes32,bytes)` function has to be called where the first parameter i.e., `bytes32` is the hash of the message that was signed, and the second parameter i.e., `bytes` are the signatures (which are arbitrary bytes).
@@ -233,7 +239,7 @@ function encodeData(bytes4 selector, bytes32 domain, bytes32 messageHash, bytes 
 
 ### SignatureValidatorManager with SafeProtocolManager
 
-An account can either implement logic to call `SignatureValidatorManager` for validating signature or set `SafeProtocolManager` as a fallback handler and set `SignatureValidatorManager` as function handler for [isValidSignature(bytes32,bytes)](https://eips.ethereum.org/EIPS/eip-1271) function in the manager. So, when a contract wants to verify account signature, it should call `isValidSignature(bytes32,bytes)` on the account and the `SafeProtocolManager` will forward the call to the `SignatureValidatorManager` which will call the `SignatureValidatorContract` to check if the signature is valid.
+An account must set `SafeProtocolManager` as a fallback handler and set `SignatureValidatorManager` as function handler for [isValidSignature(bytes32,bytes)](https://eips.ethereum.org/EIPS/eip-1271) function in the manager. So, when a contract wants to verify account signature, it should call `isValidSignature(bytes32,bytes)` on the account and the `SafeProtocolManager` will forward the call to the `SignatureValidatorManager` which will call the `SignatureValidatorContract` to check if the signature is valid.
 
 Below is the sequence diagram for enabling `SignatureValidatorManager` as function handler for an account in `SafeProtocolManager`.
 
