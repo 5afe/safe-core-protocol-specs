@@ -267,7 +267,7 @@ interface ISafeProtocolSignatureValidator {
      * @param sender The address that originally called the Safe's `isValidSignature` method
      * @param messageHash The EIP-712 hash whose signature will be verified
      * @param domainSeparator The EIP-712 domainSeparator
-     * @param hashStruct Hash of the message
+     * @param hashStruct Hash generated from typeHash and encodeData
      * @param signature The signature to be verified
      * @return magic The magic value that should be returned if the signature is valid (0x1626ba7e)
      */
