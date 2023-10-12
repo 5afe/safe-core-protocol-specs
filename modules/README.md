@@ -276,7 +276,6 @@ interface ISafeProtocolSignatureValidator {
         address sender,
         bytes32 messageHash,
         bytes32 domainSeparator,
-        bytes32 messageHash,
         bytes32 hashStruct
         bytes calldata signatures
     ) external view returns (bytes4 magic);
