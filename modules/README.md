@@ -269,7 +269,6 @@ interface ISafeProtocolSignatureValidator {
     function isValidSignature(
         address account,
         address sender,
-        bytes32 structHash,
         bytes32 domainSeparator,
         bytes32 messageHash,
         bytes calldata signatures
