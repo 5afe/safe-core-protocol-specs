@@ -8,12 +8,13 @@ Modules extend the functionality of Accounts in different ways. Initial modules 
 
 Each module is assigned a value that represents the type of module it is. The value is a power of 2, which permits bitwise operations and efficient storage of values. The table below lists the module types and their corresponding values. A contract can be used as multiple module types.
 
-| Module type         | Value |
-|---------------------|-------|
-| Plugin              | 1     |
-| Function Handler    | 2     |
-| Hooks               | 4     |
-| Signature Validator | 8     |
+| Module type               | Value |
+|---------------------------|-------|
+| Plugin                    | 1     |
+| Function Handler          | 2     |
+| Hooks                     | 4     |
+| Signature Validator Hooks | 8     |
+| Signature Validator       | 16    |
 
 ## Plugins
 
@@ -118,9 +119,11 @@ Kudos to @mfw78
 ## Signature validators
 
 There are continuous efforts to expand the types of signatures supported by the EVM beyond the currently predominant secp256k1 elliptic curve. For example, a signature scheme gaining popularity is based on the secp256r1 elliptic curve (see EIP-7212). Signature Validators allow accounts to support new standards and enable use-cases such as Passkeys-enabled smart accounts, BLS/Schnorr or quantum-secure signatures.
-Inspired from [EIP-712](https://eips.ethereum.org/EIPS/eip-712) which specifies standard for typed structured data hashing and signing, a signature validator is expected to validate a signed message for a specific domain. To do so, a `SignatureValidatorManager` contract acts as storage for maintaining enabled validators (approved by the registry) per domain per account or a default signature validator.
+Inspired from [EIP-712](https://eips.ethereum.org/EIPS/eip-712) which specifies standard for typed structured data hashing and signing, a signature validator is expected to validate a signed message for a specific domain. To do so, a `SignatureValidatorManager` contract acts as storage for maintaining enabled validators (approved by the registry) per domain per account or use a default signature validation scheme.
 
-First, a signature validator must be enabled by the account which is outlined by the below sequence diagram.
+Apart from validating EIP-712 typed signed message an account might also require to support other arbitrary signed messages for interaction with projects following other message hashing and signing formats. Signatures validator covers this requirement by using a default signature validation scheme which is discussed further.
+
+For enabling a domain specific EIP-712 signature validator, first a signature validator must be enabled by the account which is outlined by the below sequence diagram.
 
 ```mermaid
 sequenceDiagram
@@ -128,7 +131,7 @@ sequenceDiagram
 	participant SignatureValidatorManager
 	participant RegistryContract
 
-	Account->>SignatureValidatorManager: Set SignatureValidatorContract for a specific domain or default validator.
+	Account->>SignatureValidatorManager: Set SignatureValidatorContract for a specific domain.
 		SignatureValidatorManager->>RegistryContract: Check if signature validator contract is listed and not flagged
 		RegistryContract-->>SignatureValidatorManager: Return result
     SignatureValidatorManager->>SignatureValidatorManager: Check if SignatureValidatorContract implements ISafeProtocolSignatureValidator interface
@@ -141,7 +144,7 @@ The possible cases for a transaction to revert are:
 - Signature validator contract is flagged in registry
 - Transaction ran out of gas
 
-After a enabling a signature validator, external entities can request validating account signatures. The diagram below illustrates the sequence of calls that are made when a signature is to be validated. The `Account` sets the `SignatureValidatorContract` for a specific domain or a default signature validator via the `SignatureValidatorManager`. When a signature for an account is to be validated by an external entity, here referred as `ExternalContract`, the `ExternalContract` contract calls the `isValidSignature(bytes32,bytes)` function supported by the account. Account further calls `SignatureValidatorManager`. If the signature validator contract is set for the account, listed and not flagged, the `SignatureValidatorManager` calls the `SignatureValidatorContract` to check if the signature is valid. Additionally, hooks for signature validators help to provide a way to add additional checks before and after the calling a signature validation function.
+After a enabling a signature validator, external entities can request validating account signatures. The diagram below illustrates the sequence of calls that are made when a signature is to be validated. The `Account` sets the `SignatureValidatorContract` for a specific domain via the `SignatureValidatorManager`. When a signature for an account is to be validated by an external entity, here referred as `ExternalContract`, the `ExternalContract` contract calls the `isValidSignature(bytes32,bytes)` function supported by the account. Account further calls `SignatureValidatorManager`. `SignatureValidatorManager` decides to use default validation scheme or domain specific validator based on the contents of the received data. If domain specific signature validator is to be used and the signature validator contract is set for the account, listed and not flagged, the `SignatureValidatorManager` calls the `SignatureValidatorContract` to check if the signature is valid. Additionally, hooks for signature validators help to provide a way to add additional checks before and after the calling a signature validation function.
 
 ```mermaid
 sequenceDiagram
@@ -151,13 +154,12 @@ sequenceDiagram
 	participant RegistryContract
 	participant SignatureValidatorContract
     participant SignatureValidatorHooks
-    participant DefaultSignatureValidator
 
 	ExternalContract->>Account: Check if signature is valid for the account (Call isValidSignature(bytes32,bytes))
     Account->>SignatureValidatorManager: Call isSignatureValid(bytes32,bytes)
     SignatureValidatorManager->>SignatureValidatorManager: Decode data and extract 4 bytes selector
     alt selector indicating to use domain specific validator
-        SignatureValidatorManager->>SignatureValidatorManager: Decode data and extract domain, typeHash, encodeData and payload
+        SignatureValidatorManager->>SignatureValidatorManager: Decode data and extract domain, messageHash and signatures
         SignatureValidatorManager->>SignatureValidatorManager: Validate the hash and load Signature Validator for the domain
         SignatureValidatorManager->>RegistryContract: Check if Signature Validator contract is listed and not flagged
         RegistryContract-->>SignatureValidatorManager: Return result
@@ -169,20 +171,16 @@ sequenceDiagram
 
     else use default validation flow
         SignatureValidatorManager->>SignatureValidatorManager: Decode data and extract signatures
-        SignatureValidatorManager->>SignatureValidatorManager: Load DefaultSignatureValidator
-        SignatureValidatorManager->>RegistryContract: Check if Signature Validator contract is listed and not flagged
-        RegistryContract-->>SignatureValidatorManager: Return result
         SignatureValidatorManager->>SignatureValidatorHooks: Execute preValidationHook(...) if enabled
-        SignatureValidatorManager->>DefaultSignatureValidator: Check if given signature is valid. (DefaultSignatureValidator should not call account's isValidSignature(...) function)
-        DefaultSignatureValidator-->>SignatureValidatorManager: Ok
-        SignatureValidatorManager->>SignatureValidatorHooks: Execute preValidationHook(...) if enabled
+        SignatureValidatorManager->>Account: Check if given signature is valid. (call should be other than account's isValidSignature(...) function)
+        Account-->>SignatureValidatorManager: Ok
     end
     SignatureValidatorManager->>SignatureValidatorHooks: Execute postValidationHook(...) if enabled
 	SignatureValidatorManager-->>ExternalContract: Return signature validation result
     Account-->>ExternalContract: Return signature validation result
 ```
 
-The above sequence diagram only covers a flow when the signature validator contract and hooks are set, and the transaction executes successfully.
+The above sequence diagram only covers a flow when the transaction executes successfully.
 The possible cases for a transaction to revert are:
 - No Signature validator contract is set for the domain
 - Invalid message hash 
@@ -191,6 +189,7 @@ The possible cases for a transaction to revert are:
 - Decoding of data failed
 - If signature validator hook is enable, call to `preValidationHook(...)` reverted
 - Call to signature validator contract reverted
+- Default signature validation failed
 - If signature validator hook is enable, call to `postValidationHook(...)` reverted
 - Transaction ran out of gas
 
@@ -223,17 +222,14 @@ function isValidSignature(bytes32 hash, bytes memory payload) external view retu
 To distinguish signatures that follow this format from "default" signatures the signature is prepended with a special bytes4 identifier. When the dapp requests the signature the wallet can then create the signature in the required format for the correct signature routing.
 
 
-The Layout of the encoded data received by the signature validator is expected to be as follows:
+The encoded data to be received by the signature validator manager is expected to be encoded as follows:
 
-| Start                                                       | End                                                         | Description               |
-|-------------------------------------------------------------|-------------------------------------------------------------|---------------------------|
-    | 0x00                                                        | 0x04                                                        | 4 bytes selector |
-| 0x04                                                        | 0x24                                                        | domainSeparator           |
-| 0x24                                                        | 0x44                                                        | typeHash                  |
-| 0x44                                                        | 0x64                                                        | encodeData length         |
-| 0x64                                                        | <0x64 + encodeData length>                                  | encodeData                |
-| <0x64 + encodeData length>                                  | <0x64 + encodeData length> + 0x20                           | signature length          |
-| <0x64 + encodeData length> + 0x20                           | <0x64 + encodeData length> + 0x20 + signature length        | signature                 |
+```solidity
+function encodeData(bytes4 selector, bytes32 domain, bytes32 messageHash, bytes calldata signatures) public pure returns (bytes memory) {
+        bytes memory data = abi.encode(domain, messageHash, signatures);
+        return abi.encodePacked(selector, data);
+}
+```
 
 ### SignatureValidatorManager with SafeProtocolManager
 
@@ -264,20 +260,18 @@ interface ISafeProtocolSignatureValidator {
     /**
      * @param safe The Safe that has delegated the signature verification
      * @param sender The address that originally called the Safe's `isValidSignature` method
-     * @param messageHash The EIP-712 hash whose signature will be verified
+     * @param structHash The EIP-712 hash whose signature will be verified
      * @param domainSeparator The EIP-712 domainSeparator
-     * @param typeHash The EIP-712 typeHash
-     * @param encodeData The EIP-712 encoded data
+     * @param messageHash Hash of the message
      * @param signature The signature to be verified
      * @return magic The magic value that should be returned if the signature is valid (0x1626ba7e)
      */
     function isValidSignature(
         address account,
         address sender,
-        bytes32 messageHash,
+        bytes32 structHash,
         bytes32 domainSeparator,
-        bytes32 typeHash,
-        bytes calldata encodeData,
+        bytes32 messageHash,
         bytes calldata signatures
     ) external view returns (bytes4 magic);
 }
@@ -291,7 +285,7 @@ Signature validation is a critical part of smart contract accounts. A flawed imp
 interface ISignatureValidatorHooks {
     /**
      * @param account Address of the account for which signature is being validated
-     * @param validator Address of the validator contract to be used for signature validation
+     * @param validator Address of the validator contract to be used for signature validation. This address will be account address in case of default signature validation flow is used.
      * @param payload The payload provided for the validation
      * @return result bytes containing the result
      */
@@ -317,18 +311,17 @@ interface ISafeProtocolSignatureValidatorManager {
      * @notice A view function that the Manager will call when an account has enabled this contract as a function handler in the Manager for function isSignatureValid(bytes32,bytes)
      * @param account Address of the account whose signature validator is to be used
      * @param sender Address requesting signature validation
-     * @param data Calldata containing the function selector, signature hash, domain separator, type hash, encoded data and payload forwarded by the Manager
-     *              Arbitrary data containing the following layout:
+     * @param data Calldata containing the function selector, hash of signed data, domain separator, type hash, encoded data and payload forwarded by the Manager
+     *              Arbitrary data containing the following layout in case of EIP-712 typed data is signed:
      *              Layout of the data:
      *                  0x00 to 0x04: 4 bytes function selector i.e. bytes4(keccak256("isValidSignature(bytes32,bytes)") (= 0x1626ba7e)
-     *                  0x04 to 0x24: dataHash
-     *                  0x24 to 0x28: 4 bytes selector
-     *                  0x28 to 0x48: domainSeparator
-     *                  0x48 to 0x68: typeHash
-     *                  0x68 to 0x88: encodeData length
-     *                  0x88 to <0x88 + encodeData length>: encodeData
-     *                  <0x88 + encodeData length> to <0x88 + encodeData length> + 0x20 : signature length
-     *                  <0x88 + encodeData length> + 0x20 to <0x88 + encodeData length> + 0x20 + signature length: signature
+     *                  0x04 to 0x24: 32 bytes hash of signed data
+     *                  0x24 to end: encoded data containing the following:
+     *                      - 4 bytes of selector
+     *                      - 32 bytes of domainSeparator
+     *                      - 32 bytes of typeHash
+     *                      - arbitrary length bytes of containing encodeData
+     *                      - arbitrary length bytes of containing signatures
      */
     function handle(
         address account,
@@ -342,12 +335,6 @@ interface ISafeProtocolSignatureValidatorManager {
      * @param signatureValidatorContract Address of the Signature Validator Contract implementing ISafeProtocolSignatureValidator interface
      */
     function setSignatureValidator(bytes32 domain, address signatureValidatorContract) external;
-
-    /**
-     * @param domain bytes32 containing the domain for which Signature Validator contract should be used
-     * @param signatureValidatorContract Address of the Signature Validator Contract implementing ISafeProtocolSignatureValidator interface
-     */
-    function setDefaultSignatureValidator(address signatureValidatorContract) external;
 
     /**
      * @param signatureValidatorHooksContract Address of the contract to be used as Hooks for Signature Validator implementing ISignatureValidatorHook interface
