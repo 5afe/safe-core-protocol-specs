@@ -21,7 +21,7 @@ Plugins allow to add any arbitrary logic to an account such as recovery mechanis
 Plugins can trigger transactions on an `Account` via the `Manager`.
 
 ```solidity
-interface ISafeProtocolPlugIn {
+interface ISafeProtocolPlugin {
     function name() external view returns (string memory name);
 
     function version() external view returns (string memory version);
