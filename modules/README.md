@@ -232,7 +232,8 @@ The encoded data to be received by the signature validator manager as `bytes` pa
 ```solidity
 function encodeData(bytes4 selector, bytes32 domain, bytes32 hashStruct, bytes calldata signatures) public pure returns (bytes memory) {
         bytes memory data = abi.encode(domain, hashStruct, signatures);
-        return abi.encodePacked(selector, data);
+        bytes4 selector = "safeSignature(bytes32,bytes32,bytes)";
+        return abi.encodeWithSelector(selector, data);
 }
 ```
 
@@ -313,26 +314,10 @@ A signature validator manager must implement the following interface.
 interface ISafeProtocolSignatureValidatorManager {
 
     /**
-     * @notice A view function that the Manager will call when an account has enabled this contract as a function handler in the Manager for function isSignatureValid(bytes32,bytes)
-     * @param account Address of the account whose signature validator is to be used
-     * @param sender Address requesting signature validation
-     * @param data Calldata containing the 4 bytes function selector, 4 bytes signature selector, and one of the below:
-     *              encoded bytes containing bytes32 domain separator, bytes32 messageHash and bytes32 signatures
-     *              OR
-     *              encoded bytes containing bytes32 messageHash and bytes signatures
-     */
-    function handle(
-        address account,
-        address sender,
-        uint256 /* value */,
-        bytes calldata data
-    ) external view override returns (bytes memory);
-
-    /**
      * @param domain bytes32 containing the domain for which Signature Validator contract should be used
      * @param signatureValidatorContract Address of the Signature Validator Contract implementing ISafeProtocolSignatureValidator interface
      */
-    function setSignatureValidator(bytes32 domain, address signatureValidatorContract) external;
+    function setSignatureValidator(bytes32 domainSeparator, address signatureValidatorContract) external;
 
     /**
      * @param signatureValidatorHooksContract Address of the contract to be used as Hooks for Signature Validator implementing ISignatureValidatorHook interface
