@@ -121,7 +121,7 @@ Kudos to @mfw78
 There are continuous efforts to expand the types of signatures supported by the EVM beyond the currently predominant secp256k1 elliptic curve. For example, a signature scheme gaining popularity is based on the secp256r1 elliptic curve (see EIP-7212). Signature Validators allow accounts to support new standards and enable use-cases such as Passkeys-enabled smart accounts, BLS/Schnorr or quantum-secure signatures.
 Inspired from [EIP-712](https://eips.ethereum.org/EIPS/eip-712) which specifies standard for typed structured data hashing and signing, a signature validator is expected to validate a signed message for a specific domain. To do so, a `SignatureValidatorManager` contract acts as storage for maintaining enabled validators (approved by the registry) per domain per account or use a default signature validation scheme.
 
-Apart from validating EIP-712 typed signed message an account might also require to support other arbitrary signed messages for interaction with projects following other message hashing and signing formats. Signature validator covers this requirement by using a default signature validation scheme which is discussed further.
+Apart from validating EIP-712 typed signed message an account might also require to support other arbitrary signed messages for interaction with projects following other message hashing and signing formats. Other signing standards can be supported using default signature validation scheme which depends on the account implementation.
 
 ### Enabling Signature Validator
 
@@ -227,12 +227,12 @@ function isValidSignature(bytes32 hash, bytes memory payload) external view retu
 
 To distinguish signatures that follow this format from "default" signatures the signature is prepended with a special bytes4 identifier. When the dapp requests the signature the wallet can then create the signature in the required format for the correct signature routing.
 
-The encoded data to be received by the signature validator manager as `bytes` parameter of `isValidSignature(bytes32,bytes)` is expected to be encoded as follows:
+The encoded data to be received by the signature validator manager as `bytes` parameter of `isValidSignature(bytes32,bytes)` is expected to be encoded as follows when domain specific signature validator is to be used:
 
 ```solidity
 function encodeData(bytes4 selector, bytes32 domain, bytes32 hashStruct, bytes calldata signatures) public pure returns (bytes memory) {
         bytes memory data = abi.encode(domain, hashStruct, signatures);
-        bytes4 selector = "safeSignature(bytes32,bytes32,bytes)";
+        bytes4 selector = "accountSignature(bytes32,bytes32,bytes)";
         return abi.encodeWithSelector(selector, data);
 }
 ```
