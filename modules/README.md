@@ -294,7 +294,7 @@ A signature validator manager must implement the following interface.
 interface ISafeProtocolSignatureValidatorManager {
 
     /**
-     * @param domain bytes32 containing the domain for which Signature Validator contract should be used
+     * @param domainSeparator bytes32 containing the domain for which Signature Validator contract should be used
      * @param signatureValidatorContract Address of the Signature Validator Contract implementing ISafeProtocolSignatureValidator interface
      */
     function setSignatureValidator(bytes32 domainSeparator, address signatureValidatorContract) external;
