@@ -230,9 +230,9 @@ To distinguish signatures that follow this format from "default" signatures the 
 The encoded data to be received by the signature validator manager as `bytes` parameter of `isValidSignature(bytes32,bytes)` is expected to be encoded as follows when domain specific signature validator is to be used:
 
 ```solidity
-function encodeData(bytes4 selector, bytes32 domain, bytes32 hashStruct, bytes calldata signatures) public pure returns (bytes memory) {
+function encodeData(bytes32 domain, bytes32 hashStruct, bytes calldata signatures) public pure returns (bytes memory) {
         bytes memory data = abi.encode(domain, hashStruct, signatures);
-        bytes4 selector = "accountSignature(bytes32,bytes32,bytes)";
+        bytes4 selector = "Account712Signature(bytes32,bytes32,bytes)";
         return abi.encodeWithSelector(selector, data);
 }
 ```
