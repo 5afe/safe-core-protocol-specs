@@ -241,7 +241,7 @@ In the default signature validation flow, the wallet is expected to generate a h
 
 ```
     ACCOUNT_MSG_TYPEHASH = keccak256("SafeMessage(bytes message)");
-    DOMAIN_SEPARATOR_TYPEHASH = keccak256(EIP712Domain(uint256 chainId,address verifyingContract));
+    DOMAIN_SEPARATOR_TYPEHASH = keccak256("EIP712Domain(uint256 chainId,address verifyingContract"));
 
     domainSeparator = keccak256(DOMAIN_SEPARATOR_TYPEHASH || chainId || accountAddress);
     dataHash = keccak256("encoded-bytes-data-to-be-signed");
@@ -249,8 +249,8 @@ In the default signature validation flow, the wallet is expected to generate a h
     hashStruct = keccak256(DOMAIN_SEPARATOR_TYPEHASH || dataHash);
     messageHash = keccak256(0x19 || 0x01 || domainSeparator || dataHash);
 
-    signatures = generateSignaturesUsingWallet(messageHash);
-    result = await account.isValidSignature.staticCall(dataHash, signatures);
+    signatures = sign(messageHash);
+    result = account.isValidSignature(dataHash, signatures);
 ```
 
 In the above code, the account's domain separator is included in the message whose hash is signed. By doing so, the account only approves relevant signatures and not any other arbitrary signed messages. The domain separator is expected to include the account address and chainId to avoid cross-chain replay attacks. The actual value domain separator depends on the account implementation.
