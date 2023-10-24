@@ -253,7 +253,7 @@ In the default signature validation flow, the wallet is expected to generate a h
     result = await account.isValidSignature.staticCall(dataHash, signatures);
 ```
 
-In the above code, account's domain separator is included in the message whose hash is signed. By doing so, the account only approves relevant signatures and not any other arbitrary signed messages. The domain separator is expected to be creating using account address, and chainId to avoid cross-chain replay attacks. The actual value domain separator depends on the account implementation.
+In the above code, the account's domain separator is included in the message whose hash is signed. By doing so, the account only approves relevant signatures and not any other arbitrary signed messages. The domain separator is expected to include the account address and chainId to avoid cross-chain replay attacks. The actual value domain separator depends on the account implementation.
 
 ### Signature validator interface
 
