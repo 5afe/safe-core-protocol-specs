@@ -35,12 +35,12 @@ interface IAccount {
 
 where:
 
-| Type         | Name      | Description                                                                                                                                                                                                                                                                                                                                                                               |
-|--------------|-----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| address      | to        | The address of the contract to be called                                                                                                                                                                                                                                                                                                                                                  |
-| uint256      | value     | The amount of Native Token to be sent                                                                                                                                                                                                                                                                                                                                                     |
-| bytes memory | data      | The call data                                                                                                                                                                                                                                                                                                                                                                             |
-| uint8        | operation | The operation type to be executed. `0` for CALL, `1` for DELEGATECALL. The DELEGATECALL operation can only be executed by a Plugin with root access permissions. More information about transaction types can be found in the [Manager contract](https://github.com/safe-global/safe-core-protocol-specs/blob/2bffd759dd12be5583594f302d97c35e0ab9fcf5/manager/README.md) specifications. |
+| Type         | Name      | Description                                                                                                                                                                                                                                                                            |
+|--------------|-----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| address      | to        | The address of the contract to be called                                                                                                                                                                                                                                               |
+| uint256      | value     | The amount of native token to be sent. Ignored if `operation` is DELEGATECALL.                                                                                                                                                                                                         |
+| bytes memory | data      | The call data                                                                                                                                                                                                                                                                          |
+| uint8        | operation | The operation type to be executed. `0` for CALL, `1` for DELEGATECALL. The DELEGATECALL operation can only be executed by a Plugin with root access permissions. More information about transaction types can be found in the [Manager contract](../manager/README.md) specifications. |
 
 The account MUST execute a corresponding `operation` to the `to` address with the provided `value` and `data` parameters. The account MUST return a tuple of `(bool success, bytes memory returnData)`. 
 It is RECOMMENDED that the account supports the DELEGATECALL operation.
@@ -108,7 +108,6 @@ where:
   | Type         | Name        | Description            |
   |--------------|-------------|------------------------|
   | bytes32      | messageHash | Hash of the message    |
-  | bytes memory | messageData | EIP-712 pre-image data |
   | bytes memory | signatures  | Signature bytes        |
 
 The function MUST revert if the signatures are not valid.
@@ -119,15 +118,3 @@ The function MUST revert if the signatures are not valid.
 
 <img src="../_assets/accounts_safe_140.png" width=400/>
 
-### Interface
-
-```Solidity
-interface ISafe {
-    function execTransactionFromModuleReturnData(
-        address to,
-        uint256 value,
-        bytes memory data,
-        uint8 operation
-    ) external returns (bool success, bytes memory returnData);
-}
-```
