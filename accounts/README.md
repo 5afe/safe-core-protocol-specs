@@ -99,7 +99,7 @@ An example implementation of such a `fallback` function is:
 
 ```Solidity
 interface IAccount {
-    function checkSignatures(bytes32 messageHash, bytes memory messageData, bytes memory signatures) external view;
+    function checkSignatures(bytes32 messageHash, bytes memory signatures) external view;
 }
 ```
 where:
