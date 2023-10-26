@@ -138,4 +138,6 @@ Potential solutions:
 - Avoid registry storage reads
 - Adjust data structures to avoid reading storage not associated with account address
 
+Developers aiming to develop plugins that are ERC-4337 compatible should be aware of storage access restrictions, opcode usage restrictions during the simulation step of ERC-4337 specification.
+
 More details on this is available here: https://github.com/safe-global/safe-core-protocol/issues/60#issuecomment-1761296305
