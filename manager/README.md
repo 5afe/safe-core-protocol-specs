@@ -107,7 +107,7 @@ It is inevitable that more features will be added to Safe{Core} Protocol (e.g. n
 
 ## ERC-4337 compatibility
 
-In its current state, the Safe{Core} Protocol specification is not compatible with [ERC-4337](https://eips.ethereum.org/EIPS/eip-4337). The reason being that ERC-4337 enforces rules on the the read/write operations that are not compatible with the Safe{Core} Protocol. 
+Safe{Core} Protocol specification is meant to be compatible with [ERC-4337](https://eips.ethereum.org/EIPS/eip-4337). ERC-4337 enforces rules on the the read/write operations that should be carefully looked into for the Safe{Core} Protocol implementation to be compatible with ERC-4337. 
 
 As per ERC-4337 specs state the following when simulating a `UserOp` :
 
@@ -125,7 +125,7 @@ An address A is associated with:
 - Slots of type keccak256(A || X) + n on any other address. (to cover mapping(address => value), which is usually used for balance in ERC-20 tokens). n is an offset value up to 128, to allow accessing fields in the format mapping(address => struct)
 ```
 
-Whereas, the Protocol Manager contract specifies following operations that make use of storage slots that are not allowed by ERC-4337:
+The current Protocol Manager implementations specifies following operations that make use of storage slots that are not allowed by ERC-4337:
 
 - Read the registry address from storage slot not associated with the account
     - When executing transaction from Plugin
