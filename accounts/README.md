@@ -4,7 +4,7 @@ The Safe{Core} Protocol is designed to be **account agnostic**. This initial alp
 
 ## High-level overview
 
-The [Safe{Core} Protocol Manager](https://github.com/safe-global/safe-core-protocol-specs/blob/2bffd759dd12be5583594f302d97c35e0ab9fcf5/manager/README.md) contract is the main entity interacting with accounts and vice versa. The Manager expects accounts to implement a specific interface, described in this document.
+The [Safe{Core} Protocol Manager](../manager/README.md) contract is the main entity interacting with accounts and vice versa. The Manager expects accounts to implement a specific interface, described in this document.
 
 ## API Specification
 
