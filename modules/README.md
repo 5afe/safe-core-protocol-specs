@@ -34,7 +34,7 @@ interface ISafeProtocolPlugin {
 }
 ```
 
-### Plugin permissions
+### Plugin Permissions
 
 The table below elaborates the permission types that a plugin can have. For each transaction, the `Manager` will check if the plugin has the required permission. Each permission should be granted by the account explicitly. There is no hierarchy or precedence order for the permissions.
 
@@ -62,7 +62,7 @@ Inspired from [EIP-6617](https://eips.ethereum.org/EIPS/eip-6617), must `require
 
 ## Hooks
 
-### Hooks for transaction execution
+### Hooks for Transaction Execution
 
 Hooks add additional logic at certain points of the transaction lifecycle. Hooks enable various forms of security protections such as allow- and deny-lists, MEV-protections, risk-assessments, and more. The Safe{Core} Protocol currently recognizes the following types of hooks:
 - `preCheck` / `preCheckRootAccess` verify custom conditions using the state before a transaction is executed
@@ -87,7 +87,7 @@ interface ISafeProtocolHooks {
 | Multisignature Flow (for accounts that use [Guard interface](https://github.com/safe-global/safe-contracts/blob/8ffae95faa815acf86ec8b50021ebe9f96abde10/contracts/base/GuardManager.sol#L10)) | Encoded data created from parameter values received from `checkTransaction(...)` i.e. `abi.encode(to, value, data, gas, baseGas, gasPrice, gasToken, refundReceiver, signatures, msgSender)` |
 | Plugin Flow                                                                                                                                                                                    | Encoded address of the Plugin i.e. `abi.encode(pluginAddress)`                                                                                                                               |
 
-#### Parameter `executionType` value
+#### Parameter `executionType` Value
 
 | Execution Type      | Value |
 |---------------------|-------|
@@ -96,9 +96,9 @@ interface ISafeProtocolHooks {
 
 TODO: provide more details on execution metadata
 
-## Function handler
+## Function Handler
 
-Non-static version (invoked via `call`)
+Non-static version (invoked via `call`):
 
 ```solidity
 interface ISafeProtocolFunctionHandler {
@@ -106,7 +106,7 @@ interface ISafeProtocolFunctionHandler {
 }
 ```
 
-    function metadataProvider() external view returns (uint256 type, bytes memory location);
+Static version (invoked via `staticcall`):
 
 ```solidity
 interface ISafeProtocolStaticFunctionHandler {
@@ -116,7 +116,7 @@ interface ISafeProtocolStaticFunctionHandler {
 
 Kudos to @mfw78
 
-## Signature validators
+## Signature Validators
 
 There are continuous efforts to expand the types of signatures supported by the EVM beyond the currently predominant secp256k1 elliptic curve. For example, a signature scheme gaining popularity is based on the secp256r1 elliptic curve (see EIP-7212). Signature Validators allow accounts to support new standards and enable use-cases such as Passkeys-enabled smart accounts, BLS/Schnorr or quantum-secure signatures.
 Inspired from [EIP-712](https://eips.ethereum.org/EIPS/eip-712) which specifies standard for typed structured data hashing and signing, a signature validator is expected to validate a signed message for a specific domain. To do so, a `SignatureValidatorManager` contract acts as storage for maintaining enabled validators (approved by the registry) per domain per account or use a default signature validation scheme.
@@ -129,13 +129,13 @@ For enabling a domain specific EIP-712 signature validator, first a signature va
 
 ```mermaid
 sequenceDiagram
-	participant Account
-	participant SignatureValidatorManager
-	participant RegistryContract
+    participant Account
+    participant SignatureValidatorManager
+    participant RegistryContract
 
-	Account->>SignatureValidatorManager: Set SignatureValidatorContract for a specific domain.
-		SignatureValidatorManager->>RegistryContract: Check if SignatureValidatorContract is listed and not flagged
-		RegistryContract-->>SignatureValidatorManager: Return result
+    Account->>SignatureValidatorManager: Set SignatureValidatorContract for a specific domain.
+        SignatureValidatorManager->>RegistryContract: Check if SignatureValidatorContract is listed and not flagged
+        RegistryContract-->>SignatureValidatorManager: Return result
     SignatureValidatorManager->>SignatureValidatorManager: Check if SignatureValidatorContract implements ISafeProtocolSignatureValidator interface
     SignatureValidatorManager-->>Account: Ok
 ```
@@ -146,21 +146,21 @@ The possible cases for a transaction to revert are:
 - Signature validator contract is flagged in registry
 - Transaction ran out of gas
 
-### Validating account signature
+### Validating Account Signature
 
 After a enabling a signature validator and setting `SignatureValidatorManager` as function handler in `SafeProtocolManager`, external entities can request validating account signatures. The diagram below illustrates the sequence of calls that are made when an account signature is to be validated. When a signature for an account is to be validated by an external entity, here referred as `ExternalContract`, the `ExternalContract` contract calls the `isValidSignature(bytes32,bytes)` function supported by the account. Account further calls `SignatureValidatorManager`. `SignatureValidatorManager` decides to use default validation scheme or domain specific validator based on the contents of the received data. If domain specific signature validator is to be used and the signature validator contract is set for the account, listed and not flagged, the `SignatureValidatorManager` calls the `SignatureValidatorContract` to check if the signature is valid. Additionally, hooks for signature validators help to provide a way to add additional checks before and after the calling a signature validation function.
 
 ```mermaid
 sequenceDiagram
-	participant ExternalContract
-	participant Account
+    participant ExternalContract
+    participant Account
     participant SafeProtocolManager
-	participant SignatureValidatorManager
-	participant RegistryContract
-	participant SignatureValidatorContract
+    participant SignatureValidatorManager
+    participant RegistryContract
+    participant SignatureValidatorContract
     participant SignatureValidatorHooks
 
-	ExternalContract->>Account: Check if signature is valid for the account (Call isValidSignature(bytes32,bytes))
+    ExternalContract->>Account: Check if signature is valid for the account (Call isValidSignature(bytes32,bytes))
     Account->>SafeProtocolManager: SafeProtocolManager enabled as fallback handler for account
     SafeProtocolManager->>SignatureValidatorManager: Call handle(...) function
     SignatureValidatorManager->>SignatureValidatorManager: Decode data and extract 4 bytes signature selector
@@ -182,7 +182,7 @@ sequenceDiagram
         Account-->>SignatureValidatorManager: Ok
     end
     SignatureValidatorManager->>SignatureValidatorHooks: Execute postValidationHook(...) if enabled
-	SignatureValidatorManager-->>ExternalContract: Return signature validation result
+    SignatureValidatorManager-->>ExternalContract: Return signature validation result
     Account-->>ExternalContract: Return signature validation result
 ```
 
@@ -255,7 +255,7 @@ In the default signature validation flow, the wallet is expected to generate a h
 
 In the above code, the account's domain separator is included in the message whose hash is signed. By doing so, the account only approves relevant signatures and not any other arbitrary signed messages. The domain separator is expected to include the account address and chainId to avoid cross-chain replay attacks. The actual value domain separator depends on the account implementation.
 
-### Signature validator interface
+### Signature Validator Interface
 
 A signature validator must implement the following interface.
 
@@ -281,7 +281,7 @@ interface ISafeProtocolSignatureValidator {
 }
 ```
 
-### Hooks for signature validator
+### Hooks for Signature Validator
 
 Signature validation is a critical part of smart contract accounts. A flawed implementation of validation logic can lead to approving a transaction with an invalid signature. Signature validator hooks can be used to add safety net to the signature validation process and hold the power to block a signature validator from approving unauthorized actions. Hooks can be enabled for all validators before and after execution of the validation function. This can be done by adding contract implementing `ISignatureValidatorHook` interface to the `SignatureValidatorManager` by the account. The hooks are not specific to a domain and are executed for all signature validations. The hooks function(s) should revert on failed checks.
 
@@ -304,7 +304,7 @@ interface ISignatureValidatorHooks {
 }
 ```
 
-### Signature validator manager
+### Signature Validator Manager
 
 A signature validator manager must implement the following interface.
 
@@ -324,7 +324,7 @@ interface ISafeProtocolSignatureValidatorManager {
 }
 ```
 
-### Security considerations
+### Security Considerations
 
 A malicious actor can change the routing of the signature validation flow by adding/removing the 4 bytes of the signature selector. Under such cases, the signature validation should fail and revert the transaction.
 
