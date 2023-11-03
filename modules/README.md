@@ -97,7 +97,7 @@ interface ISafeProtocolHooks {
 TODO: provide more details on execution metadata
 
 ## Function Handler
-
+d
 Non-static version (invoked via `call`):
 
 ```solidity
@@ -114,14 +114,16 @@ interface ISafeProtocolStaticFunctionHandler {
 }
 ```
 
+Function handlers, once installed are executed without checking the registry.
+
 Kudos to @mfw78
 
 ## Signature Validators
 
-There are continuous efforts to expand the types of signatures supported by the EVM beyond the currently predominant secp256k1 elliptic curve. For example, a signature scheme gaining popularity is based on the secp256r1 elliptic curve (see EIP-7212). Signature Validators allow accounts to support new standards and enable use-cases such as Passkeys-enabled smart accounts, BLS/Schnorr or quantum-secure signatures.
+Signature validators enable modules to extend an account's [ERC-1271](https://eips.ethereum.org/EIPS/eip-1271) `isValidSignature` implementation allowing for custom signature validation rules.
 Inspired from [EIP-712](https://eips.ethereum.org/EIPS/eip-712) which specifies standard for typed structured data hashing and signing, a signature validator is expected to validate a signed message for a specific domain. To do so, a `SignatureValidatorManager` contract acts as storage for maintaining enabled validators (approved by the registry) per domain per account or use a default signature validation scheme.
 
-Apart from validating EIP-712 typed signed message an account might also require to support other arbitrary signed messages for interaction with projects following other message hashing and signing formats. Other signing standards can be supported using default signature validation scheme which depends on the account implementation.
+Apart from validating EIP-712 typed signed message an account might also be required to support other arbitrary signed messages for interaction with projects following other message hashing and signing formats. Other signing standards can be supported using default signature validation scheme which depends on the account implementation.
 
 ### Enabling Signature Validator
 
@@ -310,7 +312,6 @@ A signature validator manager must implement the following interface.
 
 ```solidity
 interface ISafeProtocolSignatureValidatorManager {
-
     /**
      * @param domainSeparator bytes32 containing the domain for which Signature Validator contract should be used
      * @param signatureValidatorContract Address of the Signature Validator Contract implementing ISafeProtocolSignatureValidator interface
