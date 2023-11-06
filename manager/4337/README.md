@@ -37,6 +37,9 @@ One of the main value propositions of the Safe{Core} Protocol is account securit
 In order to help protect accounts from any eventual vulnerabilities that may be discovered in the ERC-4337 _entrypoint_, The manager MUST validate `UserOperation` execution with the registry for the particular _entrypoint_ being used. Practically speaking this implies that the ERC-4337 `UserOperation` execution:
 1. SHOULD be implemented as a fallback handler module with an immutable associated _entrypoint_ contract
 2. MUST verify that the _entrypoint_ has been explicitely enabled by the account
+3. MUST verify that the _entrypoint_ has not been flagged
+
+Note that if the `UserOperation` execution is implemented as a module that only supports a single _entrypoint_, then the standard Registry check that the Manager is required to do for modules suffices for points 2 and 3 above. Otherwise the Manager MUST check that the _entrypoint_ has been enabled by the user and not been flagged through some other means.
 
 By leveraging the Safe{Core} Protocol to verify whether or not _entrypoints_ are approved, the attack surface caused by an _entrypoint_ compromise is greatly reduced. In fact, the attack is limited to the Ether transfer from the `UserOperation` validation.
 
