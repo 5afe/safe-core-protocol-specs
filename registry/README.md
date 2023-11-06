@@ -20,6 +20,7 @@ interface SafeProtocolRegistry {
 ```
 
 ## Hyperstructures and Authorities
+
 For a detailed discussion on Hyperstructures and Authorities and their role in the protocol, refer to this [article](https://mirror.xyz/konradkopp.eth/7Q3TrMFgx2VbZRKa7UEaisIMjimpMABiqGYo00T9egA).
 
 ## Automation
