@@ -75,7 +75,7 @@ sequenceDiagram
     M->>+Mod: handle(validateUserOp)
     Note over Mod: ensure EntryPoint is supported
     Mod->>A: checkSignatures()
-    Mod->>M: executeSafeTransction(accoount, transfer{missingAccountFunds})
+    Mod->>M: transferPrefund(account, entrypoint, missingAccountFunds)
     M->>A: executeTransactionFromModule(transfer{missingAccountFunds})
     A->>E: transfer{missingAccountFunds}
     Mod-->>-M: validationData
