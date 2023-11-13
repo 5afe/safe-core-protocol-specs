@@ -105,39 +105,6 @@ TBD
 
 It is inevitable that more features will be added to Safe{Core} Protocol (e.g. new modules). As the Manager is the central part of this setup, it is important to consider a path for integrating these new features. Using an upgradeable proxy for the Manager would introduce unacceptable security concerns. Separating too much of the functionality into separate contract to allow reusability (i.e. the list of enabled integration) would increase the gas costs, and so is also not practical. A better pattern is to allow new versions of the Manager to load information from a previous version and thereby facilitate a migration.
 
-## ERC-4337 compatibility
+## ERC-4337
 
-Safe{Core} Protocol specification is meant to be compatible with [ERC-4337](https://eips.ethereum.org/EIPS/eip-4337). ERC-4337 enforces rules on the the read/write operations that should be carefully looked into for the Safe{Core} Protocol implementation to be compatible with ERC-4337. 
-
-As per ERC-4337 specs state the following when simulating a `UserOp` :
-
-```
-Storage access is limited as follows:
-- self storage (of factory/paymaster, respectively) is allowed, but only if self entity is staked
-- account storage access is allowed (see Storage access by Slots, below),
-- in any case, may not use storage used by another UserOp sender in the same bundle (that is, paymaster and factory are not allowed as senders
-
-Storage associated with an account is defined as follows:
-
-An address A is associated with:
-- Slots of contract A address itself.
-- Slot A on any other address.
-- Slots of type keccak256(A || X) + n on any other address. (to cover mapping(address => value), which is usually used for balance in ERC-20 tokens). n is an offset value up to 128, to allow accessing fields in the format mapping(address => struct)
-```
-
-The current Protocol Manager implementations specifies following operations that make use of storage slots that are not allowed by ERC-4337:
-
-- Read the registry address from storage slot not associated with the account
-    - When executing transaction from Plugin
-    - When hooks are enabled
-    - When validating signature
-- Registry contract reads the storage associated with module address
-
-Potential solutions:
-
-- Avoid registry storage reads
-- Adjust data structures to avoid reading storage not associated with account address
-
-Developers aiming to develop plugins that are ERC-4337 compatible should be aware of storage access restrictions, opcode usage restrictions during the simulation step of ERC-4337 specification.
-
-More details on this is available here: https://github.com/safe-global/safe-core-protocol/issues/60#issuecomment-1761296305
+The Safe{Core} Protocol is designed to extend accounts with ERC-4337 support. Managers MUST implement the required ERC-4337 functionality outlined in the [ERC-4337](./4337/README.md) page.
