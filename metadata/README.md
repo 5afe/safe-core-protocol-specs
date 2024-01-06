@@ -9,7 +9,7 @@ To make sure that this metadata can be properly parsed and handled it is importa
 To retrieve the metadata based on a `metadataHash` a `MetadataProvider` is required. There can be different types of providers. These providers are identified by a `type` and a `locations` (TODO: maybe a different name would be better, i.e. `connection`).
 
 A non-exhaustive list of types are:
-- `ipfs` - the `location` MUST be empty (the hash is the ipfs indentifier)
+- `ipfs` - the `location` MUST be empty (the hash is the ipfs identifier)
 - `url` - the `location` MUST be a pattern where the `metadataHash` can be substituted
 - `contract` - the `location` MUST be a contract address that implements the `MetadataProvider` contract interface
 

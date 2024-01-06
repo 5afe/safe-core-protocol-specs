@@ -102,7 +102,7 @@ sequenceDiagram
     Note over M: ensure fallback handler is not flagged
     M->>+Mod: handle(executeUserOp)
     Note over Mod: ensure EntryPoint is supported
-    Mod->>+M: executeSafeTransction(account, userOp)
+    Mod->>+M: executeSafeTransaction(account, userOp)
     M->>+R: check(module)
     R-->>-M: flaggedAt
     Note over M: ensure plugin is not flagged
