@@ -1,0 +1,9 @@
+# Ignore everything
+*
+
+# We only want to have these ending in this folder
+!.gitignore
+!*.tex
+!*.png
+!*.pdf
+!*.jpg
