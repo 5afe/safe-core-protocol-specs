@@ -1,5 +1,6 @@
-# Safe{Core} Protocol Specification
+**:warning: This repository is not actively developed at the moment. :warning:**
 
+# Safe{Core} Protocol Specification
 
 See also:
 - [Protocol Whitepaper](./whitepaper.pdf)
